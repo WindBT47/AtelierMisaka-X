@@ -303,6 +303,7 @@ namespace AtelierMisaka.Models
                         {
                             _request.AddRange("bytes", _totalRC);
                         }
+                        _request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
                         HttpWebResponse response = _request.GetResponse() as HttpWebResponse;
                         if (_contentLength == 0)
                         {
