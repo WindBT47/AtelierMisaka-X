@@ -13,6 +13,13 @@
         Patreon
     }
 
+    public enum FantiaPollingState
+    {
+        Stopped,
+        Running,
+        WaitingDownloads
+    }
+
     public enum ErrorType
     {
         Web,

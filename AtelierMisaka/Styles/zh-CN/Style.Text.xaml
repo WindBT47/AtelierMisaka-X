@@ -37,6 +37,8 @@
 
     <!--#region Pop_Setting -->
 
+    <sys:String x:Key="Text_SettingTitle">配方设置</sys:String>
+    <sys:String x:Key="Text_SettingDesc">配置作者来源、下载范围和 Fantia 轮询行为。</sys:String>
     <sys:String x:Key="Text_CreatorUrl">作者链接</sys:String>
     <sys:String x:Key="Text_Cost">付费区间</sys:String>
     <sys:String x:Key="Text_OpBrowser">打开浏览器</sys:String>
@@ -46,6 +48,14 @@
     <sys:String x:Key="Text_ProxyTag">例: 127.0.0.1:1080</sys:String>
     <sys:String x:Key="Text_Date">截止日期</sys:String>
     <sys:String x:Key="Text_DateTag">例: 1919/07/21 11:45:14</sys:String>
+    <sys:String x:Key="Text_PollMode">轮询模式(90秒，截止日期自动取当前时间)</sys:String>
+    <sys:String x:Key="Text_PollHint">启用后会先执行一次扫描，随后每 90 秒检查一次 Fantia 的新 post。</sys:String>
+    <sys:String x:Key="Text_PollStatus">状态:</sys:String>
+    <sys:String x:Key="Text_PollNextCheck">下次检查:</sys:String>
+    <sys:String x:Key="Text_PollLastCheck">上次检查:</sys:String>
+    <sys:String x:Key="Text_PollStateStopped">未运行</sys:String>
+    <sys:String x:Key="Text_PollStateRunning">轮询中</sys:String>
+    <sys:String x:Key="Text_PollStateWaiting">等待下载完成</sys:String>
     <sys:String x:Key="Text_CheckFile">检查本地文件</sys:String>
     <sys:String x:Key="Text_UpdateList">更新支援列表</sys:String>
     <sys:String x:Key="Text_StarButton">确定</sys:String>

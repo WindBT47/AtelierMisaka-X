@@ -37,6 +37,8 @@
 
     <!--#region Pop_Setting -->
 
+    <sys:String x:Key="Text_SettingTitle">Recipe Setup</sys:String>
+    <sys:String x:Key="Text_SettingDesc">Configure creator source, download range, and Fantia polling behavior.</sys:String>
     <sys:String x:Key="Text_CreatorUrl">Url</sys:String>
     <sys:String x:Key="Text_Cost">Cost</sys:String>
     <sys:String x:Key="Text_OpBrowser">Open Browser</sys:String>
@@ -46,6 +48,14 @@
     <sys:String x:Key="Text_ProxyTag">e.g. 127.0.0.1:1080</sys:String>
     <sys:String x:Key="Text_Date">Until</sys:String>
     <sys:String x:Key="Text_DateTag">e.g. 1919/07/21 11:45:14</sys:String>
+    <sys:String x:Key="Text_PollMode">Polling Mode (90s, end time follows now)</sys:String>
+    <sys:String x:Key="Text_PollHint">When enabled, the app runs one scan immediately and checks Fantia for new posts every 90 seconds.</sys:String>
+    <sys:String x:Key="Text_PollStatus">Status:</sys:String>
+    <sys:String x:Key="Text_PollNextCheck">Next Check:</sys:String>
+    <sys:String x:Key="Text_PollLastCheck">Last Check:</sys:String>
+    <sys:String x:Key="Text_PollStateStopped">Stopped</sys:String>
+    <sys:String x:Key="Text_PollStateRunning">Polling</sys:String>
+    <sys:String x:Key="Text_PollStateWaiting">Waiting for downloads</sys:String>
     <sys:String x:Key="Text_CheckFile">Check Local File</sys:String>
     <sys:String x:Key="Text_UpdateList">Update SupportList</sys:String>
     <sys:String x:Key="Text_StarButton">OK</sys:String>

@@ -156,6 +156,10 @@ namespace AtelierMisaka.ViewModels
         private string _savePathFantia = string.Empty;
         private bool _useProxyFantia = false;
         private bool _needCookieFantia = true;
+        private bool _fantiaPollingMode = false;
+        private FantiaPollingState _fantiaPollingState = FantiaPollingState.Stopped;
+        private DateTime? _fantiaPollingNextCheck = null;
+        private DateTime? _fantiaPollingLastCheck = null;
 
         private string _dateS = string.Empty;
         private string _dateE = string.Empty;
@@ -347,6 +351,9 @@ namespace AtelierMisaka.ViewModels
                     RaisePropertyChanged("PostUrlTag");
                     RaisePropertyChanged("HasSelected");
                     RaisePropertyChanged("Artist");
+                    RaisePropertyChanged("FantiaPollingMode");
+                    RaisePropertyChanged("ShowFantiaPollingMode");
+                    RaisePropertyChanged("CanEditDateEnd");
                 }
             }
         }
@@ -486,6 +493,7 @@ namespace AtelierMisaka.ViewModels
             {
                 RaisePropertyChanged("CookieTag");
                 RaisePropertyChanged("PostUrlTag");
+                RaisePropertyChanged("FantiaPollingStatusText");
             }
         }
 
@@ -949,6 +957,88 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
+        public bool FantiaPollingMode
+        {
+            get => _fantiaPollingMode;
+            set
+            {
+                if (_fantiaPollingMode != value)
+                {
+                    _fantiaPollingMode = value;
+                    if (value)
+                    {
+                        UseDate = true;
+                    }
+                    else
+                    {
+                        FantiaPollingStatus = FantiaPollingState.Stopped;
+                        FantiaPollingNextCheck = null;
+                    }
+                    RaisePropertyChanged();
+                    RaisePropertyChanged("CanEditDateEnd");
+                }
+            }
+        }
+
+        public FantiaPollingState FantiaPollingStatus
+        {
+            get => _fantiaPollingState;
+            set
+            {
+                if (_fantiaPollingState != value)
+                {
+                    _fantiaPollingState = value;
+                    RaisePropertyChanged("FantiaPollingStatusText");
+                }
+            }
+        }
+
+        public DateTime? FantiaPollingNextCheck
+        {
+            get => _fantiaPollingNextCheck;
+            set
+            {
+                if (_fantiaPollingNextCheck != value)
+                {
+                    _fantiaPollingNextCheck = value;
+                    RaisePropertyChanged("FantiaPollingNextCheckText");
+                }
+            }
+        }
+
+        public DateTime? FantiaPollingLastCheck
+        {
+            get => _fantiaPollingLastCheck;
+            set
+            {
+                if (_fantiaPollingLastCheck != value)
+                {
+                    _fantiaPollingLastCheck = value;
+                    RaisePropertyChanged("FantiaPollingLastCheckText");
+                }
+            }
+        }
+
+        public string FantiaPollingStatusText
+        {
+            get
+            {
+                switch (_fantiaPollingState)
+                {
+                    case FantiaPollingState.Running:
+                        return GlobalLanguage.Text_PollStateRunning;
+                    case FantiaPollingState.WaitingDownloads:
+                        return GlobalLanguage.Text_PollStateWaiting;
+                    default:
+                        return GlobalLanguage.Text_PollStateStopped;
+                }
+            }
+        }
+
+        public string FantiaPollingNextCheckText => _fantiaPollingNextCheck.HasValue ? _fantiaPollingNextCheck.Value.ToString("HH:mm:ss") : "--:--:--";
+
+        public string FantiaPollingLastCheckText => _fantiaPollingLastCheck.HasValue ? _fantiaPollingLastCheck.Value.ToString("HH:mm:ss") : "--:--:--";
+
         public bool IsStarted
         {
             get => _isStarted;
@@ -971,9 +1061,14 @@ namespace AtelierMisaka.ViewModels
                 {
                     _useDate = value;
                     RaisePropertyChanged();
+                    RaisePropertyChanged("CanEditDateEnd");
                 }
             }
         }
+
+        public bool ShowFantiaPollingMode => _site == SiteType.Fantia;
+
+        public bool CanEditDateEnd => _useDate && !(_site == SiteType.Fantia && _fantiaPollingMode);
 
         public bool ShowLoad
         {

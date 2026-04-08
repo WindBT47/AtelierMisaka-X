@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:AtelierMisaka.ViewModels"
         mc:Ignorable="d" Background="#2D2D30" Style="{StaticResource WindowStyle}"
         Loaded="Window_Loaded" WindowStartupLocation="CenterScreen"
-        Title="{DynamicResource Text_MainTitle}" Height="720" Width="1280">
+        Title="{DynamicResource Text_MainTitle}" Height="1060" Width="1280" MinHeight="760" MinWidth="1200">
     <Window.DataContext>
         <vm:VM_Main/>
     </Window.DataContext>

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AtelierMisaka
@@ -26,6 +27,7 @@ namespace AtelierMisaka
         readonly string _nextP = "fa fa-angle-right";
         readonly string _meUrl = "https://fantia.jp/api/v1/me";
         private HashSet<string> _pidList = null;
+        private readonly SemaphoreSlim _cefGate = new SemaphoreSlim(1, 1);
         public Queue<string> _apiData = new Queue<string>();
 
 
@@ -585,58 +587,71 @@ namespace AtelierMisaka
 
         private async Task<string> GetApiCodeAsync(string url)
         {
-            if (_cwb == null)
+            await _cefGate.WaitAsync();
+            try
             {
-                _cwb = (ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser;
-            }
-            if (_cwb.RequestHandler == null)
-            {
-                _cwb.RequestHandler = new FantiaRequestHandle(_apiData);
-            }
-            _apiData.Clear();
-            _cwb.Load(url);
-            int count = 0;
-            while (true)
-            {
-                await Task.Delay(200);
+                if (_cwb == null)
+                {
+                    _cwb = (ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser;
+                }
+                if (_cwb.RequestHandler == null)
+                {
+                    _cwb.RequestHandler = new FantiaRequestHandle(_apiData);
+                }
+                _apiData.Clear();
+                _cwb.Load(url);
+                int count = 0;
+                while (true)
+                {
+                    await Task.Delay(200);
+                    if (_apiData.Count > 0)
+                    {
+                        return _apiData.Dequeue();
+                    }
+                    if (!_cwb.IsLoading)
+                    {
+                        if (++count == 30)
+                        {
+                            break;
+                        }
+                    }
+                }
                 if (_apiData.Count > 0)
                 {
                     return _apiData.Dequeue();
                 }
-                if (!_cwb.IsLoading)
-                {
-                    if (++count == 30)
-                    {
-                        break;
-                    }
-                }
-            }
-            if (_apiData.Count > 0)
-            {
-                return _apiData.Dequeue();
-            }
-            else
-            {
                 return "{}";
+            }
+            finally
+            {
+                _cefGate.Release();
             }
         }
 
         private async Task<string> GetWebCodeAsync(string url)
         {
-            if (_cwb == null)
+            await _cefGate.WaitAsync();
+            try
             {
-                _cwb = (ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser;
+                if (_cwb == null)
+                {
+                    _cwb = (ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser;
+                }
+                if (_cwb.RequestHandler == null)
+                {
+                    _cwb.RequestHandler = new FantiaRequestHandle(_apiData);
+                }
+                _cwb.Load(url);
+                do
+                {
+                    await Task.Delay(100);
+                } while (_cwb.IsLoading);
+                return await _cwb.GetTextAsync();
             }
-            if (_cwb.RequestHandler == null)
+            finally
             {
-                _cwb.RequestHandler = new FantiaRequestHandle(_apiData);
+                _cefGate.Release();
             }
-            _cwb.Load(url);
-            do
-            {
-                await Task.Delay(100);
-            } while (_cwb.IsLoading);
-            return await _cwb.GetTextAsync();
         }
 
         //private async Task<string> GetWebCodeAsync(string url)

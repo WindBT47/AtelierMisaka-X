@@ -12,8 +12,9 @@ namespace AtelierMisaka
 {
     public static class CefHelper
     {
-        private static readonly string asesmblyDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-        public static readonly string cefDirectory = Path.Combine(asesmblyDirectory, "CefChrome");
+        private static readonly string asesmblyDirectory = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        private static readonly string cefArch = Environment.Is64BitProcess ? "x64" : "x86";
+        public static readonly string cefDirectory = GetCefDirectory();
         public static readonly string dllDirectory = Path.Combine(asesmblyDirectory, "Dlls");
         private static bool initialized;
 
@@ -87,6 +88,23 @@ namespace AtelierMisaka
                 v["server"] = Address;
                 return rc.SetPreference("proxy", v, out string error);
             });
+        }
+
+        private static string GetCefDirectory()
+        {
+            var appLocalArchDir = Path.Combine(asesmblyDirectory, cefArch);
+            if (Directory.Exists(appLocalArchDir))
+            {
+                return appLocalArchDir;
+            }
+
+            var cefChromeArchDir = Path.Combine(asesmblyDirectory, "CefChrome", cefArch);
+            if (Directory.Exists(cefChromeArchDir))
+            {
+                return cefChromeArchDir;
+            }
+
+            return Path.Combine(asesmblyDirectory, "CefChrome");
         }
     }
 }

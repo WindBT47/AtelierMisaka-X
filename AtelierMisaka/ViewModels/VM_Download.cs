@@ -195,6 +195,28 @@ namespace AtelierMisaka.ViewModels
             }
         }
 
+        public bool HasPendingDownloads
+        {
+            get
+            {
+                lock (lock_DList)
+                {
+                    if (_downLoadList != null && _downLoadList.Any(x => dsArr.Contains(x.DLStatus)))
+                    {
+                        return true;
+                    }
+                }
+                if (_isFantia)
+                {
+                    lock (lock_Fantia)
+                    {
+                        return _retryList != null && _retryList.Count > 0;
+                    }
+                }
+                return false;
+            }
+        }
+
         public bool IsChangeThread
         {
             get => _isChangeThread;

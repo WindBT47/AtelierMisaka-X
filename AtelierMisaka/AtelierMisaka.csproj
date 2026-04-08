@@ -59,6 +59,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CefSharpTargetDir>CefChrome</CefSharpTargetDir>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
@@ -80,7 +81,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CefSharp, Version=112.3.0.0, Culture=neutral, PublicKeyToken=40c4b6fc221f4138, processorArchitecture=MSIL">
@@ -352,6 +353,15 @@
     <Error Condition="!Exists('..\packages\cef.redist.x86.112.3.0\build\cef.redist.x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.112.3.0\build\cef.redist.x86.props'))" />
     <Error Condition="!Exists('..\packages\CefSharp.Common.112.3.0\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.112.3.0\build\CefSharp.Common.props'))" />
     <Error Condition="!Exists('..\packages\CefSharp.Common.112.3.0\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.112.3.0\build\CefSharp.Common.targets'))" />
+  </Target>
+  <Target Name="CopyPackagedRuntimeFiles" AfterTargets="CopyFilesToOutputDirectory">
+    <ItemGroup>
+      <CefX64Files Include="$(OutDir)CefChrome\x64\**\*.*" Condition="Exists('$(OutDir)CefChrome\x64')" />
+      <CefX86Files Include="$(OutDir)CefChrome\x86\**\*.*" Condition="Exists('$(OutDir)CefChrome\x86')" />
+    </ItemGroup>
+    <Copy SourceFiles="$(ProjectDir)Dlls\sqlite3_x64.dll" DestinationFiles="$(OutDir)sqlite3_x64.dll" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(CefX64Files)" DestinationFiles="@(CefX64Files->'$(OutDir)x64\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="'@(CefX64Files)' != ''" />
+    <Copy SourceFiles="@(CefX86Files)" DestinationFiles="@(CefX86Files->'$(OutDir)x86\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="'@(CefX86Files)' != ''" />
   </Target>
   <Import Project="..\packages\CefSharp.Common.112.3.0\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.112.3.0\build\CefSharp.Common.targets')" />
 </Project>

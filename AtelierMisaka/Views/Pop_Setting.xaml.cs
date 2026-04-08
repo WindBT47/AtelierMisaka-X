@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,9 +32,15 @@ namespace AtelierMisaka.Views
         private string _tempSP = string.Empty;
         private bool _tempUP = false;
         private bool _tempUD = false;
+        private bool _tempFantiaPollingMode = false;
 
         private bool _second = false;
         private bool _selectF = true;
+        private bool _skipStartConfirm = false;
+        private CancellationTokenSource _fantiaPollCts = null;
+        private Task _fantiaPollTask = null;
+        private readonly SemaphoreSlim _fantiaRoundGate = new SemaphoreSlim(1, 1);
+        private static readonly TimeSpan _fantiaPollInterval = TimeSpan.FromSeconds(90);
 
         private IList<BaseItem> _tempBis = null;
 
@@ -46,10 +53,14 @@ namespace AtelierMisaka.Views
 
         private async void Btn_Star_Click(object sender, RoutedEventArgs e)
         {
+            var skipConfirm = _skipStartConfirm;
+            _skipStartConfirm = false;
             if (_second) return;
             _second = true;
+            bool beginAttempted = false;
+            bool beginSucceeded = false;
 
-            if (await GetCheck(GlobalData.VM_MA.IsStarted ? GlobalLanguage.Msg_SecondConf : GlobalLanguage.Msg_StartConf))
+            if (!skipConfirm && await GetCheck(GlobalData.VM_MA.IsStarted ? GlobalLanguage.Msg_SecondConf : GlobalLanguage.Msg_StartConf))
             {
                 if (GlobalData.CheckResult == false)
                 {
@@ -70,27 +81,12 @@ namespace AtelierMisaka.Views
             {
                 ShowLoading(true);
                 await Task.Delay(200);
+                beginAttempted = true;
                 if (await Begin())
                 {
-                    _tempArt = new ArtistInfo()
-                    {
-                        Id = GlobalData.VM_MA.Artist.Id,
-                        AName = GlobalData.VM_MA.Artist.AName,
-                        PayLow = GlobalData.VM_MA.Artist.PayLow,
-                        PayHigh = GlobalData.VM_MA.Artist.PayHigh,
-                        PostUrl = GlobalData.VM_MA.Artist.PostUrl,
-                    };
-                    _tempSite = GlobalData.VM_MA.Site;
-                    _tempID = GlobalData.VM_MA.IDName;
-                    _tempProxy = GlobalData.VM_MA.Proxy;
-                    _tempDate = GlobalData.VM_MA.Date_Start;
-                    _tempDate_end = GlobalData.VM_MA.Date_End;
-                    _tempSP = GlobalData.VM_MA.SavePath;
-                    _tempUP = GlobalData.VM_MA.UseProxy;
-                    _tempUD = GlobalData.VM_MA.UseDate;
-
-                    GlobalData.CurrentSite = _tempSite;
+                    UpdateRunSnapshot();
                     GlobalData.VM_MA.IsStarted = true;
+                    beginSucceeded = true;
                 }
                 ShowLoading(false);
             }
@@ -107,26 +103,17 @@ namespace AtelierMisaka.Views
                         return;
                     }
 
+                    beginAttempted = true;
                     if (await Begin())
                     {
-                        _tempArt = new ArtistInfo()
-                        {
-                            Id = GlobalData.VM_MA.Artist.Id,
-                            AName = GlobalData.VM_MA.Artist.AName,
-                            PayLow = GlobalData.VM_MA.Artist.PayLow,
-                            PayHigh = GlobalData.VM_MA.Artist.PayHigh,
-                            PostUrl = GlobalData.VM_MA.Artist.PostUrl,
-                        };
-                        _tempSite = GlobalData.VM_MA.Site;
-                        _tempID = GlobalData.VM_MA.IDName;
-                        _tempProxy = GlobalData.VM_MA.Proxy;
-                        _tempDate = GlobalData.VM_MA.Date_Start;
-                        _tempDate_end = GlobalData.VM_MA.Date_End;
-                        _tempSP = GlobalData.VM_MA.SavePath;
-
-                        GlobalData.CurrentSite = _tempSite;
+                        UpdateRunSnapshot();
+                        beginSucceeded = true;
                     }
                     ShowLoading(false);
+                    if (beginSucceeded)
+                    {
+                        await EnsureFantiaPollingAsync();
+                    }
                     _second = false;
                     return;
                 }
@@ -210,26 +197,17 @@ namespace AtelierMisaka.Views
                             return;
                         }
 
+                        beginAttempted = true;
                         if (await Begin())
                         {
-                            _tempArt = new ArtistInfo()
-                            {
-                                Id = GlobalData.VM_MA.Artist.Id,
-                                AName = GlobalData.VM_MA.Artist.AName,
-                                PayLow = GlobalData.VM_MA.Artist.PayLow,
-                                PayHigh = GlobalData.VM_MA.Artist.PayHigh,
-                                PostUrl = GlobalData.VM_MA.Artist.PostUrl,
-                            };
-                            _tempSite = GlobalData.VM_MA.Site;
-                            _tempID = GlobalData.VM_MA.IDName;
-                            _tempProxy = GlobalData.VM_MA.Proxy;
-                            _tempDate = GlobalData.VM_MA.Date_Start;
-                            _tempDate_end = GlobalData.VM_MA.Date_End;
-                            _tempSP = GlobalData.VM_MA.SavePath;
-
-                            GlobalData.CurrentSite = _tempSite;
+                            UpdateRunSnapshot();
+                            beginSucceeded = true;
                         }
                         ShowLoading(false);
+                        if (beginSucceeded)
+                        {
+                            await EnsureFantiaPollingAsync();
+                        }
                         _second = false;
                         return;
                     }
@@ -237,11 +215,51 @@ namespace AtelierMisaka.Views
                 ShowLoading(false);
                 GlobalCommand.BackCommand.Execute(BackType.Pop);
             }
+            if (beginAttempted)
+            {
+                if (beginSucceeded)
+                {
+                    await EnsureFantiaPollingAsync();
+                }
+            }
+            else if (GlobalData.VM_MA.IsStarted)
+            {
+                await EnsureFantiaPollingAsync();
+                if (_tempFantiaPollingMode != GlobalData.VM_MA.FantiaPollingMode)
+                {
+                    _tempFantiaPollingMode = GlobalData.VM_MA.FantiaPollingMode;
+                    _ = Task.Run(() => SaveSetting());
+                }
+            }
             _second = false;
+        }
+
+        private async void FantiaPollingMode_Click(object sender, RoutedEventArgs e)
+        {
+            if (_second || !IsLoaded || GlobalData.VM_MA.Site != SiteType.Fantia)
+            {
+                return;
+            }
+
+            if (GlobalData.VM_MA.FantiaPollingMode)
+            {
+                _skipStartConfirm = true;
+                Btn_Star_Click(sender, e);
+                return;
+            }
+
+            if (GlobalData.VM_MA.IsStarted)
+            {
+                await EnsureFantiaPollingAsync();
+            }
+
+            _tempFantiaPollingMode = GlobalData.VM_MA.FantiaPollingMode;
+            _ = Task.Run(() => SaveSetting());
         }
 
         private async Task<bool> Begin()
         {
+            await StopFantiaPollingAsync();
             if (string.IsNullOrEmpty(GlobalData.VM_MA.IDName))
             {
                 await GetCheck(GlobalLanguage.Msg_CheckCk);
@@ -323,27 +341,22 @@ namespace AtelierMisaka.Views
                     }
                 }
             }
-            Task.Run(() => SaveSetting());
+            _ = Task.Run(() => SaveSetting());
             await Task.Run(() => GlobalData.DLLogs.LoadData(GlobalData.VM_MA.Artist.Id, GlobalData.VM_MA.Site));
 
             if (GlobalData.VM_MA.Site == SiteType.Fantia)
             {
+                GlobalData.VM_MA.UseDate = true;
                 GlobalData.DownLP = new Downloader(null, true);
                 GlobalData.DownLP.Show();
                 GlobalData.DownLP.LoadData();
-                _ret = await _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid);
+                _ret = await RunFantiaScanRoundAsync(GlobalData.VM_MA.FantiaPollingMode);
                 if (_ret.Error != ErrorType.NoError)
                 {
                     await GetCheck(_ret.Msgs);
                     return false;
                 }
                 _tempBis = (List<BaseItem>)_ret.Result;
-                if (_tempBis.Count == 0)
-                {
-                    await GetCheck(GlobalLanguage.Msg_NoPosts);
-                    return false;
-                }
-                GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
                 GlobalCommand.BackCommand.Execute(BackType.Pop);
             }
             else
@@ -367,6 +380,214 @@ namespace AtelierMisaka.Views
                 GlobalCommand.BackCommand.Execute(BackType.Pop);
             }
             return true;
+        }
+
+        private void UpdateRunSnapshot()
+        {
+            _tempArt = new ArtistInfo()
+            {
+                Id = GlobalData.VM_MA.Artist.Id,
+                AName = GlobalData.VM_MA.Artist.AName,
+                PayLow = GlobalData.VM_MA.Artist.PayLow,
+                PayHigh = GlobalData.VM_MA.Artist.PayHigh,
+                PostUrl = GlobalData.VM_MA.Artist.PostUrl,
+            };
+            _tempSite = GlobalData.VM_MA.Site;
+            _tempID = GlobalData.VM_MA.IDName;
+            _tempProxy = GlobalData.VM_MA.Proxy;
+            _tempDate = GlobalData.VM_MA.Date_Start;
+            _tempDate_end = GlobalData.VM_MA.Date_End;
+            _tempSP = GlobalData.VM_MA.SavePath;
+            _tempUP = GlobalData.VM_MA.UseProxy;
+            _tempUD = GlobalData.VM_MA.UseDate;
+            _tempFantiaPollingMode = GlobalData.VM_MA.FantiaPollingMode;
+            GlobalData.CurrentSite = _tempSite;
+        }
+
+        private void SetFantiaPollingState(FantiaPollingState state, DateTime? nextCheck = null, DateTime? lastCheck = null)
+        {
+            GlobalData.VM_MA.FantiaPollingStatus = state;
+            if (nextCheck.HasValue || state == FantiaPollingState.Stopped)
+            {
+                GlobalData.VM_MA.FantiaPollingNextCheck = nextCheck;
+            }
+            if (lastCheck.HasValue)
+            {
+                GlobalData.VM_MA.FantiaPollingLastCheck = lastCheck;
+            }
+        }
+
+        private async Task EnsureFantiaPollingAsync()
+        {
+            if (!GlobalData.VM_MA.IsStarted || GlobalData.VM_MA.Site != SiteType.Fantia || !GlobalData.VM_MA.FantiaPollingMode)
+            {
+                await StopFantiaPollingAsync();
+                return;
+            }
+            if (_fantiaPollTask != null)
+            {
+                if (!_fantiaPollTask.IsCompleted)
+                {
+                    return;
+                }
+                await StopFantiaPollingAsync();
+            }
+            _fantiaPollCts = new CancellationTokenSource();
+            _fantiaPollTask = FantiaPollLoopAsync(_fantiaPollCts.Token);
+            SetFantiaPollingState(FantiaPollingState.Running, DateTime.Now.Add(_fantiaPollInterval));
+        }
+
+        private async Task StopFantiaPollingAsync()
+        {
+            if (_fantiaPollCts == null)
+            {
+                SetFantiaPollingState(FantiaPollingState.Stopped, null);
+                return;
+            }
+            try
+            {
+                _fantiaPollCts.Cancel();
+                if (_fantiaPollTask != null)
+                {
+                    await _fantiaPollTask;
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+            }
+            finally
+            {
+                _fantiaPollTask = null;
+                _fantiaPollCts.Dispose();
+                _fantiaPollCts = null;
+                SetFantiaPollingState(FantiaPollingState.Stopped, null);
+            }
+        }
+
+        private async Task FantiaPollLoopAsync(CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested && GlobalData.VM_MA.IsStarted && GlobalData.VM_MA.Site == SiteType.Fantia)
+                {
+                    SetFantiaPollingState(FantiaPollingState.Running, DateTime.Now.Add(_fantiaPollInterval));
+                    await Task.Delay(_fantiaPollInterval, token);
+                    if (token.IsCancellationRequested || !GlobalData.VM_MA.IsStarted || GlobalData.VM_MA.Site != SiteType.Fantia || !GlobalData.VM_MA.FantiaPollingMode)
+                    {
+                        break;
+                    }
+                    if (GlobalData.VM_DL != null && GlobalData.VM_DL.HasPendingDownloads)
+                    {
+                        SetFantiaPollingState(FantiaPollingState.WaitingDownloads, DateTime.Now.Add(_fantiaPollInterval));
+                        continue;
+                    }
+                    await _fantiaRoundGate.WaitAsync(token);
+                    try
+                    {
+                        if (!await EnsureFantiaPollReadyAsync())
+                        {
+                            SetFantiaPollingState(FantiaPollingState.Running, DateTime.Now.Add(_fantiaPollInterval));
+                            continue;
+                        }
+                        SetFantiaPollingState(FantiaPollingState.Running, null, DateTime.Now);
+                        await RunFantiaScanRoundAsync();
+                    }
+                    finally
+                    {
+                        _fantiaRoundGate.Release();
+                    }
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                GlobalMethord.ErrorLog(ex.Message + Environment.NewLine + ex.StackTrace + Environment.NewLine + "-----------------------------------------------");
+            }
+        }
+
+        private async Task<bool> EnsureFantiaPollReadyAsync()
+        {
+            if (GlobalData.VM_MA.Site != SiteType.Fantia || !GlobalData.VM_MA.FantiaPollingMode)
+            {
+                return false;
+            }
+            _utils = GlobalData.CaptureUtil;
+            if (GlobalData.VM_MA.NeedCookie)
+            {
+                var ret = await _utils.CheckCookies();
+                if (ret.Error != ErrorType.NoError || ret.Result == null || !(bool)ret.Result)
+                {
+                    return false;
+                }
+                GlobalData.VM_MA.NeedCookie = false;
+            }
+            return true;
+        }
+
+        private async Task<ResultMessage> RunFantiaScanRoundAsync(bool refreshDateEnd = true)
+        {
+            _utils = GlobalData.CaptureUtil;
+            GlobalData.VM_MA.UseDate = true;
+            if (GlobalData.VM_MA.Site == SiteType.Fantia && GlobalData.VM_MA.FantiaPollingMode)
+            {
+                SetFantiaPollingState(FantiaPollingState.Running, null, DateTime.Now);
+            }
+            if (refreshDateEnd || string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
+            {
+                var scanEnd = DateTime.Now;
+                GlobalData.StartTime = scanEnd;
+                GlobalData.VM_MA.Date_End = scanEnd.ToString("yyyy/MM/dd HH:mm:ss");
+            }
+            else
+            {
+                GlobalData.StartTime = DateTime.Now;
+            }
+            GlobalData.VM_MA.PostCount = 0;
+            GlobalData.VM_MA.PostTitle = string.Empty;
+
+            var ret = await _utils.GetPostIDs(GlobalData.VM_MA.Artist.Cid);
+            if (ret.Error != ErrorType.NoError)
+            {
+                return ret;
+            }
+
+            var bis = (List<BaseItem>)ret.Result;
+            MergeFantiaItems(bis);
+            if (GlobalData.VM_DL != null && !GlobalData.VM_DL.HasPendingDownloads)
+            {
+                AdvanceFantiaLastDate();
+            }
+            return ret;
+        }
+
+        private void MergeFantiaItems(IList<BaseItem> bis)
+        {
+            var current = _tempBis?.ToList() ?? GlobalData.VM_MA.ItemList?.ToList() ?? new List<BaseItem>();
+            if (bis != null && bis.Count > 0)
+            {
+                current = bis.Concat(current.Where(x => !bis.Contains(x))).ToList();
+            }
+            _tempBis = current;
+            GlobalData.VM_MA.ItemList = current.Where(x => !x.Skip).ToList();
+        }
+
+        private void AdvanceFantiaLastDate()
+        {
+            if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
+            {
+                GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
+                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
+            }
+            else
+            {
+                GlobalData.VM_MA.LastDate = GlobalData.VM_MA.LastDate_End;
+                GlobalData.VM_MA.Date_Start = GlobalData.VM_MA.Date_End;
+                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate_End);
+            }
+            _tempDate = GlobalData.VM_MA.Date_Start;
+            _tempDate_end = GlobalData.VM_MA.Date_End;
         }
 
         private async void Btn_GetList_Click(object sender, RoutedEventArgs e)
@@ -540,6 +761,7 @@ namespace AtelierMisaka.Views
                     GlobalData.VM_MA.SavePath = ms[1];
                     GlobalData.VM_MA.Proxy = ms[2];
                     GlobalData.VM_MA.UseProxy = bool.Parse(ms[3]);
+                    GlobalData.VM_MA.FantiaPollingMode = false;
                 }
                 GlobalData.VM_MA.Site = SiteType.Fanbox;
                 ais = GlobalMethord.ReadArtists("Settings\\Artists_Fanbox.json");

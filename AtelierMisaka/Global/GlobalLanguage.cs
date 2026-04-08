@@ -29,6 +29,9 @@ namespace AtelierMisaka
         public static string Text_NoCov { get; private set; }
         public static string Text_NeedLC { get; private set; }
         public static string Text_UseBrowser { get; private set; }
+        public static string Text_PollStateStopped { get; private set; }
+        public static string Text_PollStateRunning { get; private set; }
+        public static string Text_PollStateWaiting { get; private set; }
 
         #endregion
 
@@ -95,6 +98,9 @@ namespace AtelierMisaka
             Text_NoCov = GetResource("Text_NoCover");
             Text_NeedLC = GetResource("Text_NeedLoad");
             Text_UseBrowser = GetResource("Text_Browser");
+            Text_PollStateStopped = GetResource("Text_PollStateStopped");
+            Text_PollStateRunning = GetResource("Text_PollStateRunning");
+            Text_PollStateWaiting = GetResource("Text_PollStateWaiting");
 
             Msg_ExitApp = GetResource("Msg_Exit");
             Msg_StartConf = GetResource("Msg_StartConfirm");

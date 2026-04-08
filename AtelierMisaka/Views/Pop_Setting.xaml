@@ -16,18 +16,124 @@
             <DoubleAnimation RepeatBehavior="Forever" From="0" To="360" Duration="0:0:3" Storyboard.TargetName="p2"/>
             <DoubleAnimation RepeatBehavior="Forever" From="360" To="0" Duration="0:0:4" Storyboard.TargetName="p3"/>
         </Storyboard>
+        <LinearGradientBrush x:Key="SettingBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#23262C" Offset="0"/>
+            <GradientStop Color="#2D2D30" Offset="0.55"/>
+            <GradientStop Color="#1E232A" Offset="1"/>
+        </LinearGradientBrush>
+        <Style x:Key="PS_RB_Setting" TargetType="RadioButton">
+            <Setter Property="Width" Value="280"/>
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="bg" Margin="8,0" CornerRadius="16" Background="Transparent" BorderBrush="#00000000" BorderThickness="1">
+                            <TextBlock x:Name="tb" Text="{TemplateBinding Content}" FontSize="{TemplateBinding FontSize}" FontWeight="SemiBold"
+                                       Foreground="#B6BFCC" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#2C323B"/>
+                                <Setter TargetName="tb" Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#0B84FF"/>
+                                <Setter TargetName="bg" Property="BorderBrush" Value="#6CB8FF"/>
+                                <Setter TargetName="tb" Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="PS_CB_Setting" TargetType="CheckBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Height="{TemplateBinding Height}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="26"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="box" Width="20" Height="20" CornerRadius="6" Background="#22262C" BorderBrush="#697282" BorderThickness="1.5" VerticalAlignment="Center"/>
+                            <Path x:Name="mark" Data="M2,10 L7,15 L16,4" Width="14" Height="12" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Stroke="#8AD0FF" StrokeThickness="2.6" StrokeEndLineCap="Round" StrokeStartLineCap="Round" Opacity="0"/>
+                            <ContentPresenter Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="box" Property="Background" Value="#0B84FF"/>
+                                <Setter TargetName="box" Property="BorderBrush" Value="#6CB8FF"/>
+                                <Setter TargetName="mark" Property="Opacity" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="PS_BTN_Setting" TargetType="Button">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Padding" Value="24,0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#313640"/>
+            <Setter Property="BorderBrush" Value="#555D6B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bg" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="14">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bg" Property="BorderBrush" Value="#88A5C5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bg" Property="Opacity" Value="0.88"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="PS_BTN_Primary" TargetType="Button" BasedOn="{StaticResource PS_BTN_Setting}">
+            <Setter Property="Background" Value="#0B84FF"/>
+            <Setter Property="BorderBrush" Value="#6CB8FF"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
     </UserControl.Resources>
-    <Grid Background="#2D2D30">
-        <StackPanel Orientation="Vertical" Width="900" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <StackPanel Orientation="Horizontal" Height="80" HorizontalAlignment="Center">
-                <RadioButton Content="Fanbox" Style="{StaticResource RB_Setting}"
+    <Grid Background="{StaticResource SettingBackgroundBrush}">
+        <Ellipse Width="360" Height="360" Fill="#103FA9F5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-120,-120,0,0" IsHitTestVisible="False"/>
+        <Ellipse Width="280" Height="280" Fill="#10F59E0B" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-100,-100" IsHitTestVisible="False"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0">
+            <Grid MinHeight="760">
+                <Border Width="980" MaxWidth="980" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="40,30,40,56"
+                        Background="#383C44" BorderBrush="#4E5563" BorderThickness="1" CornerRadius="26" Padding="28,24">
+        <StackPanel Orientation="Vertical" Width="920">
+            <TextBlock Text="{DynamicResource Text_SettingTitle}" FontSize="34" FontWeight="SemiBold" Foreground="White"/>
+            <TextBlock Text="{DynamicResource Text_SettingDesc}" FontSize="16" Foreground="#B4BBC8" Margin="0,8,0,18"/>
+            <Border Background="#20242A" BorderBrush="#444A54" BorderThickness="1" CornerRadius="18" Padding="8" Margin="0,0,0,18">
+            <StackPanel Orientation="Horizontal" Height="58" HorizontalAlignment="Center">
+                <RadioButton Content="Fanbox" Style="{StaticResource PS_RB_Setting}"
                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fanbox}}"/>
-                <RadioButton Content="Fantia" Style="{StaticResource RB_Setting}"
+                <RadioButton Content="Fantia" Style="{StaticResource PS_RB_Setting}"
                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fantia}}"/>
-                <RadioButton Content="Patreon" Style="{StaticResource RB_Setting}"
+                <RadioButton Content="Patreon" Style="{StaticResource PS_RB_Setting}"
                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Patreon}}"/>
             </StackPanel>
-            <Grid Height="60">
+            </Border>
+            <Grid Height="60" Margin="0,0,0,10">
                 <TextBlock Text="{DynamicResource Text_CreatorUrl}" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Name="popt" Style="{StaticResource TB_Setting}" Tag="{Binding PostUrlTag}" Text="{Binding Artist.PostUrl, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Background="#2D2D30" Visibility="{Binding HasSelected, Converter={StaticResource btvc}}" Padding="10,0"
@@ -82,7 +188,7 @@
                     </Border>
                 </local:PopupEx>
             </Grid>
-            <Grid Height="60">
+            <Grid Height="60" Margin="0,0,0,10">
                 <TextBlock Text="{DynamicResource Text_Cost}" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Width="150" Style="{StaticResource TB_Setting}" Margin="150,0" HorizontalAlignment="Left" Tag="0" Text="{Binding Artist.PayLow, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Text="~" Style="{StaticResource TBL_Setting}" Margin="0,0,560,0"/>
@@ -96,43 +202,82 @@
                     </ComboBox>
                 </StackPanel>
             </Grid>
-            <Grid Height="60">
+            <Grid Height="60" Margin="0,0,0,10">
                 <TextBlock Text="IDName" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Style="{StaticResource TB_Setting}" Tag="{Binding CookieTag}"
                          Text="{Binding IDName, UpdateSourceTrigger=PropertyChanged}"
                          Margin="80,10,250,10" Width="500"/>
-                <Button Style="{StaticResource BTN_Setting}" HorizontalAlignment="Right"
+                <Button Style="{StaticResource PS_BTN_Setting}" HorizontalAlignment="Right"
                         Width="210" Margin="20,10" Height="40" Click="Btn_OpenBrowser_Click"
                         Content="{DynamicResource Text_OpBrowser}"/>
             </Grid>
-            <Grid Height="60">
+            <Grid Height="60" Margin="0,0,0,10">
                 <TextBlock Text="{DynamicResource Text_SavePath}" Style="{StaticResource TBL_Setting}"/>
                 <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_SavePathTag}" Text="{Binding SavePath, UpdateSourceTrigger=PropertyChanged}" MouseDoubleClick="TextBox_MouseDoubleClick"/>
             </Grid>
-            <Grid Height="60">
-                <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_Proxy}" IsChecked="{Binding UseProxy}"/>
+            <Grid Height="60" Margin="0,0,0,10">
+                <CheckBox Style="{StaticResource PS_CB_Setting}" Content="{DynamicResource Text_Proxy}" IsChecked="{Binding UseProxy}" Margin="0,0,0,0"/>
                 <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_ProxyTag}" IsEnabled="{Binding UseProxy}"
                          Text="{Binding Proxy, UpdateSourceTrigger=PropertyChanged}" Margin="80,10" Width="670"/>
                 <Image Height="40" Width="40" HorizontalAlignment="Right" Margin="20,10" Source="/AtelierMisaka;component/Resources/Status_Cancel.png"
                        Visibility="{Binding IsProxyError, Converter={StaticResource btvc}}"/>
             </Grid>
-            <Grid Height="60">
-                <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_Date}" IsChecked="{Binding UseDate}"/>
+            <Grid Height="60" Margin="0,0,0,10">
+                <CheckBox Style="{StaticResource PS_CB_Setting}" Content="{DynamicResource Text_Date}" IsChecked="{Binding UseDate}" Margin="0,0,0,0"/>
                 <StackPanel Orientation="Horizontal" Margin="130,0,10,0">
                     <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}"
                          IsEnabled="{Binding UseDate}" Text="{Binding Date_Start, UpdateSourceTrigger=PropertyChanged}" Margin="20,0,15,0" Width="340"/>
                     <TextBlock Text="~" Style="{StaticResource TBL_Setting}" Margin="0"/>
                     <TextBox Style="{StaticResource TB_Setting}" Tag="{DynamicResource Text_DateTag}"
-                         IsEnabled="{Binding UseDate}" Text="{Binding Date_End, UpdateSourceTrigger=PropertyChanged}" Margin="15,0,0,0" Width="340"/>
+                         IsEnabled="{Binding CanEditDateEnd}" Text="{Binding Date_End, UpdateSourceTrigger=PropertyChanged}" Margin="15,0,0,0" Width="340"/>
                 </StackPanel>
             </Grid>
-            <StackPanel Height="60" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="Btn_GetList_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_UpdateList}" Width="250"/>
-                <Button Click="Btn_Star_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_StarButton}" Margin="20,0" Width="150"/>
-                <Button Click="Btn_Back_Click" Style="{StaticResource BTN_Setting}" Content="{DynamicResource Text_ExitButton}" Width="150"/>
-                <CheckBox Style="{StaticResource CB_Setting}" Content="{DynamicResource Text_CheckFile}" IsChecked="{Binding CheckFile}" Margin="20,0"/>
-            </StackPanel>
+            <Grid Height="Auto" Margin="0,4,0,14" Visibility="{Binding ShowFantiaPollingMode, Converter={StaticResource btvc}}">
+                <Border Background="#20242A" BorderBrush="#454C57" BorderThickness="1" CornerRadius="18" Padding="18,14">
+                    <StackPanel>
+                        <CheckBox Style="{StaticResource PS_CB_Setting}" IsChecked="{Binding FantiaPollingMode}" Click="FantiaPollingMode_Click">
+                            <TextBlock Text="{DynamicResource Text_PollMode}" TextWrapping="Wrap" Width="820"/>
+                        </CheckBox>
+                        <TextBlock Text="{DynamicResource Text_PollHint}" Foreground="#8F98A6" FontSize="15" Margin="38,10,0,0" TextWrapping="Wrap"/>
+                        <Border Background="#182028" BorderBrush="#2F3C4C" BorderThickness="1" CornerRadius="14" Padding="14,12" Margin="0,14,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Text_PollStatus}" Foreground="#AEB7C4" FontSize="15"/>
+                                <TextBlock Grid.Column="1" Text="{Binding FantiaPollingStatusText}" Foreground="White" FontSize="15" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Row="1" Text="{DynamicResource Text_PollNextCheck}" Foreground="#AEB7C4" FontSize="15" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding FantiaPollingNextCheckText}" Foreground="White" FontSize="15" HorizontalAlignment="Right" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="2" Text="{DynamicResource Text_PollLastCheck}" Foreground="#AEB7C4" FontSize="15" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FantiaPollingLastCheckText}" Foreground="White" FontSize="15" HorizontalAlignment="Right" Margin="0,8,0,0"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Grid Height="60" Margin="0,6,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Click="Btn_GetList_Click" Style="{StaticResource PS_BTN_Setting}" Content="{DynamicResource Text_UpdateList}" Width="240"/>
+                <Button Grid.Column="1" Click="Btn_Star_Click" Style="{StaticResource PS_BTN_Primary}" Content="{DynamicResource Text_StarButton}" Margin="16,0,0,0" Width="150"/>
+                <Button Grid.Column="2" Click="Btn_Back_Click" Style="{StaticResource PS_BTN_Setting}" Content="{DynamicResource Text_ExitButton}" Margin="16,0,0,0" Width="150"/>
+                <CheckBox Grid.Column="4" Style="{StaticResource PS_CB_Setting}" Content="{DynamicResource Text_CheckFile}" IsChecked="{Binding CheckFile}" VerticalAlignment="Center"/>
+            </Grid>
         </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
         <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,5" Orientation="Horizontal">
             <TextBlock Foreground="White" Margin="15,0">
                 <Run Text="Produced By: "/>

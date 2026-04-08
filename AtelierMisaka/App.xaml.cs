@@ -23,7 +23,7 @@ namespace AtelierMisaka
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            SetDllDirectory(CefHelper.dllDirectory);
+            SetDllDirectory(CefHelper.cefDirectory);
 
             CefHelper.Initialize();
 
