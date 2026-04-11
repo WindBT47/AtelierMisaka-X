@@ -19,6 +19,9 @@
     <!--#region MainWindow -->
 
     <sys:String x:Key="Text_MainTitle">ミサカのアトリエ</sys:String>
+    <sys:String x:Key="Text_MainDocuments">投稿</sys:String>
+    <sys:String x:Key="Text_MainDownloads">ダウンロード</sys:String>
+    <sys:String x:Key="Text_MainSettings">設定</sys:String>
     <sys:String x:Key="Text_ShowAll">全部</sys:String>
     <sys:String x:Key="Text_ShowHasNotFile">ファイルなし</sys:String>
     <sys:String x:Key="Text_ShowHasLink">リンクあり</sys:String>
@@ -46,10 +49,13 @@
     <sys:String x:Key="Text_SavePathTag">例: E:\勉強資料</sys:String>
     <sys:String x:Key="Text_Proxy">プロキシサーバ</sys:String>
     <sys:String x:Key="Text_ProxyTag">例: 127.0.0.1:1080</sys:String>
-    <sys:String x:Key="Text_Date">タイムリミット</sys:String>
+    <sys:String x:Key="Text_RunMode">動作モード</sys:String>
+    <sys:String x:Key="Text_RunModeTime">時間範囲</sys:String>
+    <sys:String x:Key="Text_RunModePolling">巡回購読</sys:String>
+    <sys:String x:Key="Text_Date">時間範囲</sys:String>
     <sys:String x:Key="Text_DateTag">例: 1919/07/21 11:45:14(半角注意)</sys:String>
-    <sys:String x:Key="Text_PollMode">巡回モード(90秒、終了時間は現在時刻)</sys:String>
-    <sys:String x:Key="Text_PollHint">有効にすると一度スキャンを実行し、その後は 90 秒ごとに Fantia の新着 post を確認します。</sys:String>
+    <sys:String x:Key="Text_PollMode">巡回購読（90秒ごとに確認）</sys:String>
+    <sys:String x:Key="Text_PollHint">直近 15 件の既知 post ID を基準に、新しく公開された内容を確認します。このモードでは時間範囲を使いません。</sys:String>
     <sys:String x:Key="Text_PollStatus">状態:</sys:String>
     <sys:String x:Key="Text_PollNextCheck">次回チェック:</sys:String>
     <sys:String x:Key="Text_PollLastCheck">前回チェック:</sys:String>
@@ -59,7 +65,7 @@
     <sys:String x:Key="Text_CheckFile">ファイルチェック</sys:String>
     <sys:String x:Key="Text_UpdateList">支援リストを更新</sys:String>
     <sys:String x:Key="Text_StarButton">調合開始</sys:String>
-    <sys:String x:Key="Text_ExitButton">調合をやめる</sys:String>
+    <sys:String x:Key="Text_ExitButton">閉じる</sys:String>
     <sys:String x:Key="Text_BackToMain">調合の成果を見る</sys:String>
     <sys:String x:Key="Text_ShowDownloader">釜の調子を覗く</sys:String>
     <sys:String x:Key="Text_CurrVer">バージョン:</sys:String>
@@ -107,6 +113,11 @@
     <sys:String x:Key="Text_SubTitle">釜です</sys:String>
     <sys:String x:Key="Text_DownloadList">調合リスト</sys:String>
     <sys:String x:Key="Text_CompletedList">完成リスト</sys:String>
+    <sys:String x:Key="Text_DownloadEmpty">現在ダウンロードタスクはありません</sys:String>
+    <sys:String x:Key="Text_CompletedEmpty">現在完了済みの項目はありません</sys:String>
+    <sys:String x:Key="Text_DownloadEmptyHint">新しい取得を始めると、ここにタスクが表示されます</sys:String>
+    <sys:String x:Key="Text_CompletedEmptyHint">完了したダウンロードはここに表示されます</sys:String>
+    <sys:String x:Key="Text_OpenSettings">設定を開く</sys:String>
     <sys:String x:Key="Text_ThreadCount">同時調合:</sys:String>
     <sys:String x:Key="Text_PlayButton">全部スタート</sys:String>
     <sys:String x:Key="Text_PauseButton">全部ストップ</sys:String>

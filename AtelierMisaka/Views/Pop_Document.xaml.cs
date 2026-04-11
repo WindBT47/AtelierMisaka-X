@@ -281,6 +281,8 @@ namespace AtelierMisaka.Views
         {
             Hyperlink link = sender as Hyperlink;
             GlobalData.VM_DL.AddCommand.Execute(link.CommandParameter);
+            GlobalData.VM_MA.MainSection = MainSection.Downloads;
+            GlobalCommand.BackCommand.Execute(BackType.Pop);
         }
 
         private void Hl_Click(object sender, RoutedEventArgs e)

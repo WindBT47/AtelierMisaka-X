@@ -26,9 +26,15 @@ namespace AtelierMisaka
         readonly Regex _artDataImage = GlobalRegex.GetRegex(RegexType.FantiaDataImage);
         readonly string _nextP = "fa fa-angle-right";
         readonly string _meUrl = "https://fantia.jp/api/v1/me";
+        private const int _pollingWindowSize = 15;
         private HashSet<string> _pidList = null;
         private readonly SemaphoreSlim _cefGate = new SemaphoreSlim(1, 1);
+        private bool _usePollingCursor = false;
+        private bool _seedPollingCursor = false;
+        private HashSet<string> _pollingCursorPids = new HashSet<string>();
+        private int _consecutiveSeenCount = 0;
         public Queue<string> _apiData = new Queue<string>();
+        public IList<string> LastScanHeadPids { get; private set; } = new List<string>();
 
 
         public async override Task<ResultMessage> CheckCookies()
@@ -199,6 +205,7 @@ namespace AtelierMisaka
             try
             {
                 _pidList = new HashSet<string>();
+                PreparePollingCursor(uid);
                 var bis = await GetPostIDsFromWebCode(uid);
                 return ResultHelper.NoError(bis);
             }
@@ -224,9 +231,37 @@ namespace AtelierMisaka
                 while (ma.Success)
                 {
                     string pid = ma.Groups[1].Value;
+                    if (LastScanHeadPids.Count < _pollingWindowSize && !LastScanHeadPids.Contains(pid))
+                    {
+                        LastScanHeadPids.Add(pid);
+                    }
                     if (_pidList.Add(pid))
                     {
-                        var res = await GetUrls(pid, bis);
+                        if (_seedPollingCursor)
+                        {
+                            if (LastScanHeadPids.Count >= _pollingWindowSize)
+                            {
+                                flag = false;
+                                break;
+                            }
+                            ma = ma.NextMatch();
+                            continue;
+                        }
+
+                        if (_usePollingCursor && _pollingCursorPids.Contains(pid))
+                        {
+                            _consecutiveSeenCount++;
+                            if (_consecutiveSeenCount >= _pollingWindowSize)
+                            {
+                                flag = false;
+                                break;
+                            }
+                            ma = ma.NextMatch();
+                            continue;
+                        }
+
+                        _consecutiveSeenCount = 0;
+                        var res = await GetUrls(pid, bis, !_usePollingCursor);
                         if (res == false)
                         {
                             flag = false;
@@ -253,7 +288,38 @@ namespace AtelierMisaka
             }
         }
 
-        private async Task<bool?> GetUrls(string pid, List<BaseItem> bis)
+        private void PreparePollingCursor(string uid)
+        {
+            LastScanHeadPids = new List<string>();
+            _usePollingCursor = false;
+            _seedPollingCursor = false;
+            _pollingCursorPids = new HashSet<string>();
+            _consecutiveSeenCount = 0;
+
+            if (GlobalData.VM_MA.Site != SiteType.Fantia || !GlobalData.VM_MA.FantiaPollingMode)
+            {
+                return;
+            }
+
+            if (GlobalData.ForceFantiaPollingSeed)
+            {
+                GlobalData.ForceFantiaPollingSeed = false;
+                _seedPollingCursor = true;
+                return;
+            }
+
+            if (GlobalData.FantiaPollingCursorDic != null && GlobalData.FantiaPollingCursorDic.TryGetWindow(uid, out List<string> lastPids))
+            {
+                _pollingCursorPids = new HashSet<string>(lastPids);
+                _usePollingCursor = _pollingCursorPids.Count > 0;
+            }
+            else
+            {
+                _seedPollingCursor = true;
+            }
+        }
+
+        private async Task<bool?> GetUrls(string pid, List<BaseItem> bis, bool useTimeBoundary)
         {
             try
             {
@@ -272,7 +338,7 @@ namespace AtelierMisaka
                         fi.UpdateDate = dt;
                     }
 
-                    if (GlobalMethord.OverTime(fi.UpdateDate))
+                    if (useTimeBoundary && GlobalMethord.OverTime(fi.UpdateDate))
                     {
                         if (GlobalMethord.OverTime(fi.CreateDate))
                         {

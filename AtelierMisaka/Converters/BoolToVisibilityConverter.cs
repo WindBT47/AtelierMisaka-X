@@ -9,14 +9,15 @@ namespace AtelierMisaka.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value.Equals(true))
+            bool isVisible = value is bool visible && visible;
+            bool useCollapsed = string.Equals(parameter as string, "collapse", StringComparison.OrdinalIgnoreCase);
+
+            if (isVisible)
             {
                 return Visibility.Visible;
             }
-            else
-            {
-                return Visibility.Hidden;
-            }
+
+            return useCollapsed ? Visibility.Collapsed : Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

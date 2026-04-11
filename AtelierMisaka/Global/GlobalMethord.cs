@@ -21,9 +21,12 @@ namespace AtelierMisaka
         {
             GlobalData.Pop_Setting = new Pop_Setting();
             GlobalData.Pop_Document = new Pop_Document();
+            GlobalData.DownLP = new Downloader();
+            GlobalData.VM_MA.DownloadPage = GlobalData.DownLP;
             GlobalData.SyContext = SynchronizationContext.Current;
             GlobalData.DLLogs = new DownloadLogList();
             GlobalData.LastDateDic = new CLastDateDic();
+            GlobalData.FantiaPollingCursorDic = new FantiaPollingCursorDic();
         }
 
         public static void UpdateCulture()
@@ -89,6 +92,36 @@ namespace AtelierMisaka
                 }
             }
             return false;
+        }
+
+        public static void SetFantiaPollingPendingCursor(string cid, IEnumerable<string> pids)
+        {
+            GlobalData.FantiaPollingPendingCId = cid ?? string.Empty;
+            GlobalData.FantiaPollingPendingPids = pids == null ? new List<string>() : pids.Where(x => !string.IsNullOrEmpty(x)).Distinct().Take(15).ToList();
+        }
+
+        public static void ClearFantiaPollingPendingCursor()
+        {
+            GlobalData.FantiaPollingPendingCId = string.Empty;
+            GlobalData.FantiaPollingPendingPids.Clear();
+        }
+
+        public static bool CommitFantiaPollingPendingCursor()
+        {
+            if (GlobalData.FantiaPollingCursorDic == null ||
+                string.IsNullOrEmpty(GlobalData.FantiaPollingPendingCId) ||
+                GlobalData.FantiaPollingPendingPids == null ||
+                GlobalData.FantiaPollingPendingPids.Count == 0)
+            {
+                return false;
+            }
+
+            var flag = GlobalData.FantiaPollingCursorDic.AddOrUpdate(GlobalData.FantiaPollingPendingCId, GlobalData.FantiaPollingPendingPids);
+            if (flag)
+            {
+                ClearFantiaPollingPendingCursor();
+            }
+            return flag;
         }
 
         public static bool IsFileExist(string folder, string name)

@@ -1,145 +1,194 @@
-# Welcome to AtelierMisaka!
+# AtelierMisaka Reforge
 
-This Atelier is designed for showding and downloadding content on Fanbox or Patreon or Fantia.
+Current version: `v1.6.9`
 
-### About This Project
+AtelierMisaka Reforge is a Windows desktop tool for browsing and downloading creator content from Fanbox, Fantia, and Patreon.
 
-I don't want to develop Login Func except Patreon, so you should input Cookies by yourself.
+Reforge is the continued maintenance line after the original branch stopped active development. It keeps the original use case and continues with UI consolidation, Fantia polling support, and ongoing fixes.
 
-This Atelier will show you a Document List and a Content List through Fanbox/Fantia/Pateron's API.
+## Overview
 
-**Just Show or Download when you are supported or public contents**
+AtelierMisaka Reforge focuses on three workflows:
 
-**Please support a creator if you love his/her works**
+* Browse creator posts
+* Queue and download supported content
+* Manage downloads inside a unified main window
 
-I want to develop "LikePost" and "Comment" Function.
+The current UI uses three main sections:
 
-### Main Function
+* `下载`
+* `文章`
+* `设置`
 
-* Get Creator List who you were subscribed
-* Get subscribed plan
-* Get Document List
-* Proxy Setting
-* Filter with (publish date) or (subscribed plan)
-* Download Contents
-* "LikePost"(only Fanbox)
-* I18N Support
+Fantia also supports a built-in polling mode that checks for new posts every 90 seconds.
 
-### Progress
+## Main Features
 
-* Can download on Fanbox/Fantia/Patreon
+* Support Fanbox, Fantia, and Patreon
+* Load supported creator lists
+* Browse creator post lists
+* Filter by publish date and support tier or price range
+* Download files, images, and attached content
+* View active downloads and completed items in the main window
+* Fantia polling mode with 90-second checks
+* Proxy settings
+* Multi-language UI: `zh-CN`, `ja-JP`, `en-US`
+* Fanbox like support
 
-### Function Plan
+## Notes
 
-* "LikePost" Func Optimized
-* "Comment" Func (except Fantia)
+* This tool is for content you can already access, including supported and public content.
+* Please support the creators whose work you enjoy.
+* Some site flows still rely on your own session or cookie setup.
 
-### Runtime
+## Quick Start
 
-* Windows 10
-* [.NET Framework 4.7.1](https://www.microsoft.com/en-us/download/details.aspx?id=56116)
-* [Microsoft Visual C++ Redistributable Package](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
+1. Open `设置`.
+2. Choose `Fanbox`, `Fantia`, or `Patreon`.
+3. Set the creator URL, save path, and account or proxy options if needed.
+4. Click `确定`.
+5. Use `文章` to browse posts.
+6. Use `下载` to watch active and completed tasks.
+7. On Fantia, enable `轮询模式` if you want automatic checks every 90 seconds.
 
-The Programer ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) only test on Windows 10.
+## Runtime Requirements
 
-----
+* Windows 10 or later
+* [.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
+* [Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)
 
-# 欢迎来到御坂的炼精工房
+The packaged release includes the CefSharp runtime used by the application.
 
-在这里可以查看Fanbox或Patreon或Fantia上指定作者的文章，以及下载其中的内容。
+---
 
-### 关于本工房
+# 欢迎来到 AtelierMisaka Reforge
 
-目前还没决定是否要实装【登录】功能（Patreon除外），所以现在是由您自己去获取Cookies输入到程序中。
+当前版本：`v1.6.9`
 
-然后通过Fanbox或Patreon或Fantia的API，生成并显示文章和下载内容的列表，进行下载。
+AtelierMisaka Reforge 是一个 Windows 桌面工具，用于查看和下载 Fanbox、Fantia、Patreon 上创作者已公开或已支援可访问的内容。
 
-**这个工具只能下载已支援的和免费公开的内容，**
+Reforge 这条线是原分支停止活跃维护后的继续维护版本。它保留原来的使用目标，并持续推进界面整合、Fantia 轮询支持和后续修正。
 
-**如果有喜欢的作者，请尽量支援。**
+## 项目简介
 
-【喜欢】和【评论】功能我也想尽量实装。
+当前版本围绕三个核心操作展开：
 
-### 主要功能
+* 查看文章
+* 管理下载
+* 在主界面内完成设置
 
+当前主界面已经统一为三个主区：
+
+* `下载`
+* `文章`
+* `设置`
+
+Fantia 额外支持 `90 秒轮询模式`，可自动检查新 post。
+
+## 主要功能
+
+* 支持 Fanbox、Fantia、Patreon
 * 获取支援列表
-* 获取支援等级
-* 显示文章
+* 显示作者文章列表
+* 按发表时间和支援等级或价格区间筛选
+* 下载文件、图片和附件内容
+* 在主窗口内查看下载中和已完成列表
+* Fantia 轮询模式，每 90 秒检查一次
 * 代理设置
-* 根据发表时间和价格过滤显示和下载
-* 下载文件
-* 【喜欢】功能，目前仅Fanbox
-* 多语言支持
+* 多语言支持：`简体中文`、`日文`、`英文`
+* Fanbox 点赞功能
 
-### 开发进度
+## 使用说明
 
-* 三个网站已全部支持
+* 这个工具只面向您已经有权限访问的内容，包括已支援内容和公开内容。
+* 如果有喜欢的作者，请尽量支援。
+* 部分站点仍然需要您自己准备会话信息或 Cookies。
 
-### 下一步要实现的功能
+## 快速开始
 
-* 完善【喜欢】功能
-* 【评论】功能（除了Fantia）
+1. 打开 `设置`。
+2. 选择 `Fanbox`、`Fantia` 或 `Patreon`。
+3. 填写作者链接、保存路径，以及需要的账号或代理配置。
+4. 点击 `确定`。
+5. 在 `文章` 页面查看文章列表。
+6. 在 `下载` 页面查看当前任务和已完成项目。
+7. 如果是 Fantia，可以开启 `轮询模式`，程序会每 90 秒自动检查新 post。
 
-### 运行环境
+## 运行环境
 
-* Windows 10 以后
-* [.NET Framework 4.7.1](https://www.microsoft.com/zh-cn/download/details.aspx?id=56116)
-* [Microsoft Visual C++ Redistributable Package](https://support.microsoft.com/zh-cn/help/2977003/the-latest-supported-visual-c-downloads)
+* Windows 10 及以上
+* [.NET Framework 4.8](https://dotnet.microsoft.com/zh-cn/download/dotnet-framework/net48)
+* [Microsoft Visual C++ Redistributable](https://learn.microsoft.com/zh-cn/cpp/windows/latest-supported-vc-redist)
 
-我 ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) 只在Windows 10 上运行确认过。
+发布包内已包含程序运行所需的 CefSharp 运行库。
 
-----
+---
 
-# 御坂のアトリエへようこそ！
+# AtelierMisaka Reforge へようこそ
 
-このアトリエは、FanboxとPatreonとFantiaで発表された文章とコンテンツをダウンロードするためのツールです。
+現在のバージョン：`v1.6.9`
 
-### このプロジェクトについて
+AtelierMisaka Reforge は、Fanbox、Fantia、Patreon の投稿とコンテンツを閲覧し、ダウンロードするための Windows デスクトップツールです。
 
-ログイン機能の実装はまだ決まてませんので（Patreonを除く）、現在は使用者自力でCookiesを取得して、入力する仕様です。
+Reforge は、元のブランチの更新が止まったあとに続けて保守しているラインです。元の用途を引き継ぎつつ、UI の統合、Fantia のポーリング対応、継続的な修正を進めています。
 
-FanboxやPatreonやFantiaのAPIを使って、文章とコンテンツの一覧を作り、表示し、ダウンロードします。
+## プロジェクト概要
 
-**これはあくまで支援したものと無料公開したものをダウンロードするツールです、**
+現在のバージョンは次の 3 つの作業を中心にしています。
 
-**好きなクリエイターがいれば、どうぞ支援してください。**
+* 投稿一覧を確認する
+* ダウンロードを管理する
+* メイン画面内で設定を完結させる
 
-「この文章好き」と「コメント」機能は出来るだけ実装したいと思います。
+メイン画面は次の 3 つのセクションで構成されています。
 
-### 主な機能
+* `下载`
+* `文章`
+* `设置`
 
-* 支援しているクリエイター一覧の取得
-* 支援しているプランの取得
-* 発表された文章の一覧表示
-* Proxy設定(HttpとHttps)
-* フィルタ機能(発表時間、値段)
-* コンテンツをダウンロード
-* 「この文章好き」機能（Fanboxだけ）
-* 多言語
+Fantia では `90 秒ごとのポーリングモード` に対応しています。
 
-### 進捗
+## 主な機能
 
-* 全部ダウンロード可能になりました
+* Fanbox、Fantia、Patreon に対応
+* 支援中クリエイター一覧の取得
+* 投稿一覧の表示
+* 公開日時と支援プランまたは価格帯でのフィルタ
+* ファイル、画像、添付コンテンツのダウンロード
+* メインウィンドウ内での進行中一覧と完了一覧の表示
+* Fantia の 90 秒ポーリングモード
+* Proxy 設定
+* 多言語 UI：`中国語`、`日本語`、`英語`
+* Fanbox の Like 対応
 
-### これから実装したい機能
+## 利用上の注意
 
-* 「この文章好き」の改善
-* 「コメント」機能（Fantiaを除く）
+* このツールは、すでにアクセス権のある公開コンテンツと支援済みコンテンツを対象にしています。
+* 好きなクリエイターがいれば、ぜひ支援してください。
+* 一部サイトでは、自分のセッション情報や Cookies の準備が必要です。
 
-### 動作環境
+## クイックスタート
+
+1. `设置` を開きます。
+2. `Fanbox`、`Fantia`、`Patreon` のいずれかを選びます。
+3. クリエイター URL、保存先、必要なアカウント情報や Proxy を設定します。
+4. `确定` を押します。
+5. `文章` で投稿を確認します。
+6. `下载` で進行中と完了済みのタスクを確認します。
+7. Fantia では `轮询模式` を有効にすると、90 秒ごとに新しい post を確認します。
+
+## 動作環境
 
 * Windows 10 以降
-* [.NET Framework 4.7.1](https://www.microsoft.com/ja-jp/download/details.aspx?id=56116)
-* [Microsoft Visual C++ Redistributable Package](https://support.microsoft.com/ja-jp/help/2977003/the-latest-supported-visual-c-downloads)
+* [.NET Framework 4.8](https://dotnet.microsoft.com/ja-jp/download/dotnet-framework/net48)
+* [Microsoft Visual C++ Redistributable](https://learn.microsoft.com/ja-jp/cpp/windows/latest-supported-vc-redist)
 
-開発者 ([@EndlessMISAKA](https://twitter.com/EndlessMISAKA)) は Windows 10 でのみ動作確認を行っております。
+配布パッケージには CefSharp ランタイムが含まれています。
 
-----
+---
 
-### 使用ライブラリ
+## Libraries
 
-#### [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
-
-#### [CefSharp](https://github.com/cefsharp/CefSharp)
-
-#### [SQLite.NET](https://github.com/praeclarum/sqlite-net)
+* [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+* [CefSharp](https://github.com/cefsharp/CefSharp)
+* [SQLite.NET](https://github.com/praeclarum/sqlite-net)

@@ -52,6 +52,12 @@
         OnlyHttp
     }
 
+    public enum MainSection
+    {
+        Documents,
+        Downloads
+    }
+
     public enum SupportCulture
     {
         zh_CN,

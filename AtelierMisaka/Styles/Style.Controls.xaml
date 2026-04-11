@@ -645,4 +645,99 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type Border}" x:Key="PageToolbarHost">
+        <Setter Property="Background" Value="#2C3139"/>
+        <Setter Property="BorderBrush" Value="#3D4552"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="18"/>
+        <Setter Property="Padding" Value="16,12"/>
+    </Style>
+
+    <Style TargetType="{x:Type Border}" x:Key="PageSurface">
+        <Setter Property="Background" Value="#272C33"/>
+        <Setter Property="BorderBrush" Value="#3B414B"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="20"/>
+        <Setter Property="Padding" Value="10"/>
+    </Style>
+
+    <Style TargetType="{x:Type RadioButton}" x:Key="PageToolbarTab">
+        <Setter Property="MinWidth" Value="132"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Padding" Value="18,0"/>
+        <Setter Property="Margin" Value="0,0,10,0"/>
+        <Setter Property="FontSize" Value="19"/>
+        <Setter Property="Foreground" Value="#B8C1CF"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RadioButton}">
+                    <Border x:Name="bg" Background="#343840" BorderBrush="#4D5565" BorderThickness="1" CornerRadius="12">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" TextElement.FontSize="{TemplateBinding FontSize}"
+                                          TextElement.FontWeight="SemiBold"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bg" Property="BorderBrush" Value="#7C95B8"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="bg" Property="Background" Value="#0B84FF"/>
+                            <Setter TargetName="bg" Property="BorderBrush" Value="#6CB8FF"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Button}" x:Key="PageToolbarAction">
+        <Setter Property="MinWidth" Value="118"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Padding" Value="18,0"/>
+        <Setter Property="Margin" Value="0,0,10,0"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Foreground" Value="#C7D0DD"/>
+        <Setter Property="Background" Value="#343840"/>
+        <Setter Property="BorderBrush" Value="#4D5565"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="bg" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" TextElement.FontSize="{TemplateBinding FontSize}"
+                                          TextElement.FontWeight="SemiBold"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bg" Property="BorderBrush" Value="#7C95B8"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="bg" Property="Background" Value="#3A4250"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type TextBlock}" x:Key="PageToolbarLabel">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Foreground" Value="#C7D0DD"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style TargetType="{x:Type ComboBox}" x:Key="PageToolbarCombo" BasedOn="{StaticResource ComB}">
+        <Setter Property="Width" Value="86"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
 </ResourceDictionary>

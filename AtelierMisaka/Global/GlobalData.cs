@@ -21,7 +21,11 @@ namespace AtelierMisaka
         public static DateTime StartTime = DateTime.Now;
 
         public static CLastDateDic LastDateDic = null;
+        public static FantiaPollingCursorDic FantiaPollingCursorDic = null;
         public static DownloadLogList DLLogs = null;
+        public static string FantiaPollingPendingCId = string.Empty;
+        public static List<string> FantiaPollingPendingPids = new List<string>();
+        public static bool ForceFantiaPollingSeed = false;
 
         public static Pop_Setting Pop_Setting = null;
         public static Pop_Document Pop_Document = null;

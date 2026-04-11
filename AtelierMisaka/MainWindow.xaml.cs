@@ -1,5 +1,7 @@
 ﻿using CefSharp.Wpf;
 using System.Windows;
+using System.IO;
+using System.Linq;
 using System.Windows.Input;
 
 namespace AtelierMisaka
@@ -27,7 +29,7 @@ namespace AtelierMisaka
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             GlobalData.VM_MA.ShowLoad = true;
-            GlobalCommand.BackCommand.Execute(BackType.Main);
+            GlobalCommand.BackCommand.Execute(BackType.Pop);
             GlobalData.VM_MA.MLeft = (ActualWidth - 550) / 2;
             GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
 
@@ -44,6 +46,27 @@ namespace AtelierMisaka
             });
             GlobalData.VM_MA.ShowLoad = false;
             GlobalMethord.GetSystemProxy();
+            if (ShouldOpenSettingsOnLaunch())
+            {
+                GlobalCommand.OpenSettingCommand.Execute(null);
+            }
+        }
+
+        private static bool ShouldOpenSettingsOnLaunch()
+        {
+            return !HasSavedSetting("Settings\\Setting_Fanbox.ini")
+                && !HasSavedSetting("Settings\\Setting_Fantia.ini")
+                && !HasSavedSetting("Settings\\Setting_Patreon.ini");
+        }
+
+        private static bool HasSavedSetting(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return false;
+            }
+            var lines = File.ReadAllLines(path);
+            return lines.Any(x => !string.IsNullOrWhiteSpace(x));
         }
 
         #region TitleButton

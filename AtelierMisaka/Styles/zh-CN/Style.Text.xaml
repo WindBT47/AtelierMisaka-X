@@ -19,6 +19,9 @@
     <!--#region MainWindow -->
 
     <sys:String x:Key="Text_MainTitle">御坂的炼精工房</sys:String>
+    <sys:String x:Key="Text_MainDocuments">文章</sys:String>
+    <sys:String x:Key="Text_MainDownloads">下载</sys:String>
+    <sys:String x:Key="Text_MainSettings">设置</sys:String>
     <sys:String x:Key="Text_ShowAll">全部显示</sys:String>
     <sys:String x:Key="Text_ShowHasNotFile">没有文件</sys:String>
     <sys:String x:Key="Text_ShowHasLink">包含链接</sys:String>
@@ -46,10 +49,13 @@
     <sys:String x:Key="Text_SavePathTag">例: E:\Setu</sys:String>
     <sys:String x:Key="Text_Proxy">代理设置</sys:String>
     <sys:String x:Key="Text_ProxyTag">例: 127.0.0.1:1080</sys:String>
-    <sys:String x:Key="Text_Date">截止日期</sys:String>
+    <sys:String x:Key="Text_RunMode">运行方式</sys:String>
+    <sys:String x:Key="Text_RunModeTime">时间范围</sys:String>
+    <sys:String x:Key="Text_RunModePolling">轮询订阅</sys:String>
+    <sys:String x:Key="Text_Date">时间范围</sys:String>
     <sys:String x:Key="Text_DateTag">例: 1919/07/21 11:45:14</sys:String>
-    <sys:String x:Key="Text_PollMode">轮询模式(90秒，截止日期自动取当前时间)</sys:String>
-    <sys:String x:Key="Text_PollHint">启用后会先执行一次扫描，随后每 90 秒检查一次 Fantia 的新 post。</sys:String>
+    <sys:String x:Key="Text_PollMode">轮询订阅（每 90 秒检查一次）</sys:String>
+    <sys:String x:Key="Text_PollHint">根据最近 15 个已见 post ID 检查新公开内容。此模式不使用时间范围。</sys:String>
     <sys:String x:Key="Text_PollStatus">状态:</sys:String>
     <sys:String x:Key="Text_PollNextCheck">下次检查:</sys:String>
     <sys:String x:Key="Text_PollLastCheck">上次检查:</sys:String>
@@ -59,7 +65,7 @@
     <sys:String x:Key="Text_CheckFile">检查本地文件</sys:String>
     <sys:String x:Key="Text_UpdateList">更新支援列表</sys:String>
     <sys:String x:Key="Text_StarButton">确定</sys:String>
-    <sys:String x:Key="Text_ExitButton">退出</sys:String>
+    <sys:String x:Key="Text_ExitButton">关闭</sys:String>
     <sys:String x:Key="Text_BackToMain">查看炼制成果</sys:String>
     <sys:String x:Key="Text_ShowDownloader">查看炼精炉</sys:String>
     <sys:String x:Key="Text_CurrVer">当前版本:</sys:String>
@@ -107,6 +113,11 @@
     <sys:String x:Key="Text_SubTitle">炼精炉</sys:String>
     <sys:String x:Key="Text_DownloadList">精炼列表</sys:String>
     <sys:String x:Key="Text_CompletedList">已完成列表</sys:String>
+    <sys:String x:Key="Text_DownloadEmpty">当前没有下载任务</sys:String>
+    <sys:String x:Key="Text_CompletedEmpty">当前没有已完成项目</sys:String>
+    <sys:String x:Key="Text_DownloadEmptyHint">开始新的抓取后，任务会显示在这里</sys:String>
+    <sys:String x:Key="Text_CompletedEmptyHint">下载完成后的文件会显示在这里</sys:String>
+    <sys:String x:Key="Text_OpenSettings">打开设置</sys:String>
     <sys:String x:Key="Text_ThreadCount">同时精炼数:</sys:String>
     <sys:String x:Key="Text_PlayButton">全部开始</sys:String>
     <sys:String x:Key="Text_PauseButton">全部暂停</sys:String>

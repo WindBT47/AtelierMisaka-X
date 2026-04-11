@@ -36,7 +36,6 @@ namespace AtelierMisaka.Views
 
         private bool _second = false;
         private bool _selectF = true;
-        private bool _skipStartConfirm = false;
         private CancellationTokenSource _fantiaPollCts = null;
         private Task _fantiaPollTask = null;
         private readonly SemaphoreSlim _fantiaRoundGate = new SemaphoreSlim(1, 1);
@@ -53,19 +52,29 @@ namespace AtelierMisaka.Views
 
         private async void Btn_Star_Click(object sender, RoutedEventArgs e)
         {
-            var skipConfirm = _skipStartConfirm;
-            _skipStartConfirm = false;
             if (_second) return;
             _second = true;
             bool beginAttempted = false;
             bool beginSucceeded = false;
 
-            if (!skipConfirm && await GetCheck(GlobalData.VM_MA.IsStarted ? GlobalLanguage.Msg_SecondConf : GlobalLanguage.Msg_StartConf))
+            if (await GetCheck(GlobalData.VM_MA.IsStarted ? GlobalLanguage.Msg_SecondConf : GlobalLanguage.Msg_StartConf))
             {
                 if (GlobalData.CheckResult == false)
                 {
                     _second = false;
                     return;
+                }
+            }
+
+            bool fantiaPollingWillEnable = false;
+            if (GlobalData.VM_MA.Site == SiteType.Fantia)
+            {
+                fantiaPollingWillEnable = !GlobalData.VM_MA.FantiaPollingMode && GlobalData.VM_MA.FantiaPollingModeDraft;
+                GlobalData.VM_MA.ApplyFantiaRunModeDraft();
+                if (fantiaPollingWillEnable)
+                {
+                    GlobalData.ForceFantiaPollingSeed = true;
+                    GlobalMethord.ClearFantiaPollingPendingCursor();
                 }
             }
 
@@ -234,29 +243,6 @@ namespace AtelierMisaka.Views
             _second = false;
         }
 
-        private async void FantiaPollingMode_Click(object sender, RoutedEventArgs e)
-        {
-            if (_second || !IsLoaded || GlobalData.VM_MA.Site != SiteType.Fantia)
-            {
-                return;
-            }
-
-            if (GlobalData.VM_MA.FantiaPollingMode)
-            {
-                _skipStartConfirm = true;
-                Btn_Star_Click(sender, e);
-                return;
-            }
-
-            if (GlobalData.VM_MA.IsStarted)
-            {
-                await EnsureFantiaPollingAsync();
-            }
-
-            _tempFantiaPollingMode = GlobalData.VM_MA.FantiaPollingMode;
-            _ = Task.Run(() => SaveSetting());
-        }
-
         private async Task<bool> Begin()
         {
             await StopFantiaPollingAsync();
@@ -284,8 +270,7 @@ namespace AtelierMisaka.Views
 
             if (null != GlobalData.DownLP)
             {
-                GlobalData.VM_DL.DownLoadItemList.Clear();
-                GlobalData.DownLP.Close();
+                GlobalData.DownLP.Reset();
             }
             GlobalData.VM_MA.PostCount = 0;
             GlobalData.VM_MA.PostTitle = string.Empty;
@@ -347,9 +332,7 @@ namespace AtelierMisaka.Views
             if (GlobalData.VM_MA.Site == SiteType.Fantia)
             {
                 GlobalData.VM_MA.UseDate = true;
-                GlobalData.DownLP = new Downloader(null, true);
-                GlobalData.DownLP.Show();
-                GlobalData.DownLP.LoadData();
+                GlobalData.DownLP.LoadData(null, true);
                 _ret = await RunFantiaScanRoundAsync(GlobalData.VM_MA.FantiaPollingMode);
                 if (_ret.Error != ErrorType.NoError)
                 {
@@ -357,6 +340,7 @@ namespace AtelierMisaka.Views
                     return false;
                 }
                 _tempBis = (List<BaseItem>)_ret.Result;
+                GlobalData.VM_MA.MainSection = MainSection.Downloads;
                 GlobalCommand.BackCommand.Execute(BackType.Pop);
             }
             else
@@ -374,9 +358,8 @@ namespace AtelierMisaka.Views
                     return false;
                 }
                 GlobalData.VM_MA.ItemList = _tempBis.Where(x => !x.Skip).ToList();
-                GlobalData.DownLP = new Downloader(_tempBis);
-                GlobalData.DownLP.Show();
-                GlobalData.DownLP.LoadData();
+                GlobalData.DownLP.LoadData(_tempBis);
+                GlobalData.VM_MA.MainSection = MainSection.Downloads;
                 GlobalCommand.BackCommand.Execute(BackType.Pop);
             }
             return true;
@@ -555,11 +538,31 @@ namespace AtelierMisaka.Views
 
             var bis = (List<BaseItem>)ret.Result;
             MergeFantiaItems(bis);
+            UpdateFantiaPollingCursor();
             if (GlobalData.VM_DL != null && !GlobalData.VM_DL.HasPendingDownloads)
             {
-                AdvanceFantiaLastDate();
+                if (!GlobalMethord.CommitFantiaPollingPendingCursor())
+                {
+                    AdvanceFantiaLastDate();
+                }
             }
             return ret;
+        }
+
+        private void UpdateFantiaPollingCursor()
+        {
+            if (!GlobalData.VM_MA.FantiaPollingMode || string.IsNullOrEmpty(GlobalData.VM_MA.Artist?.Cid))
+            {
+                return;
+            }
+
+            var fantiaUtils = _utils as FantiaUtils ?? GlobalData.CaptureUtil as FantiaUtils;
+            if (fantiaUtils == null || fantiaUtils.LastScanHeadPids == null || fantiaUtils.LastScanHeadPids.Count == 0)
+            {
+                return;
+            }
+
+            GlobalMethord.SetFantiaPollingPendingCursor(GlobalData.VM_MA.Artist.Cid, fantiaUtils.LastScanHeadPids);
         }
 
         private void MergeFantiaItems(IList<BaseItem> bis)
@@ -575,6 +578,10 @@ namespace AtelierMisaka.Views
 
         private void AdvanceFantiaLastDate()
         {
+            if (GlobalData.VM_MA.FantiaPollingMode)
+            {
+                return;
+            }
             if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
             {
                 GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
@@ -655,7 +662,7 @@ namespace AtelierMisaka.Views
 
         private void Btn_Back_Click(object sender, RoutedEventArgs e)
         {
-            GlobalCommand.ExitCommand.Execute(null);
+            GlobalCommand.BackCommand.Execute(BackType.Pop);
         }
 
         private async void Btn_OpenBrowser_Click(object sender, RoutedEventArgs e)

@@ -144,6 +144,8 @@
     <Compile Include="Models\CLastDateDic.cs" />
     <Compile Include="Models\DownloadLog.cs" />
     <Compile Include="Models\DownloadLogList.cs" />
+    <Compile Include="Models\FantiaPollingCursor.cs" />
+    <Compile Include="Models\FantiaPollingCursorDic.cs" />
     <Compile Include="Models\JsonData_Fanbox.cs" />
     <Compile Include="Models\JsonData_Fantia.cs" />
     <Compile Include="Models\ArtistInfo.cs" />
@@ -161,6 +163,7 @@
     <Compile Include="Utils\FantiaUtils.cs" />
     <Compile Include="Global\GlobalData.cs" />
     <Compile Include="Utils\FanboxUtils.cs" />
+    <Compile Include="SQLiteFantiaPollingCursorHelper.cs" />
     <Compile Include="Utils\SQLiteCLastDateHelper.cs" />
     <Compile Include="Utils\SQLiteConnectionFactory.cs" />
     <Compile Include="Utils\SQLiteDownloadLogHelper.cs" />

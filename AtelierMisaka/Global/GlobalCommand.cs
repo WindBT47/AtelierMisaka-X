@@ -9,6 +9,21 @@ namespace AtelierMisaka
 {
     public class GlobalCommand
     {
+        private static void OpenSettingDrawer()
+        {
+            GlobalData.VM_MA.IsShowDocument = false;
+            GlobalData.VM_MA.SyncFantiaRunModeDraft();
+            GlobalData.VM_MA.PopPage = GlobalData.Pop_Setting;
+            GlobalData.VM_MA.LZindex = 3;
+        }
+
+        private static void CloseOverlay()
+        {
+            GlobalData.VM_MA.PopPage = null;
+            GlobalData.VM_MA.IsShowDocument = false;
+            GlobalData.VM_MA.LZindex = 0;
+        }
+
         public static CommonCommand OpBrowserCommand = new CommonCommand(() =>
         {
             ((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser).Load(GlobalData.VM_MA.MainPage);
@@ -27,14 +42,28 @@ namespace AtelierMisaka
         {
             if (flag == BackType.Main)
             {
-                GlobalData.VM_MA.PopPage = GlobalData.Pop_Setting;
-                GlobalData.VM_MA.LZindex = 3;
+                OpenSettingDrawer();
             }
             else
             {
-                GlobalData.VM_MA.PopPage = null;
-                GlobalData.VM_MA.IsShowDocument = false;
-                GlobalData.VM_MA.LZindex = 0;
+                CloseOverlay();
+            }
+        });
+
+        public static CommonCommand OpenSettingCommand = new CommonCommand(() =>
+        {
+            OpenSettingDrawer();
+        });
+
+        public static CommonCommand ToggleSettingCommand = new CommonCommand(() =>
+        {
+            if (GlobalData.VM_MA.PopPage == GlobalData.Pop_Setting)
+            {
+                CloseOverlay();
+            }
+            else
+            {
+                OpenSettingDrawer();
             }
         });
 
@@ -74,8 +103,8 @@ namespace AtelierMisaka
 
         public static CommonCommand ShowDLCommand = new CommonCommand(() =>
         {
-            GlobalData.DownLP.Show();
-            GlobalData.DownLP.Activate();
+            GlobalData.VM_MA.MainSection = MainSection.Downloads;
+            CloseOverlay();
         });
 
         public static CommonCommand OpenLinkCommand = new CommonCommand(() =>

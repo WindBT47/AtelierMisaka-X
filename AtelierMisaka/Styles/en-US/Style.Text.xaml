@@ -19,6 +19,9 @@
     <!--#region MainWindow -->
 
     <sys:String x:Key="Text_MainTitle">AtelierMisaka</sys:String>
+    <sys:String x:Key="Text_MainDocuments">Posts</sys:String>
+    <sys:String x:Key="Text_MainDownloads">Downloads</sys:String>
+    <sys:String x:Key="Text_MainSettings">Settings</sys:String>
     <sys:String x:Key="Text_ShowAll">All</sys:String>
     <sys:String x:Key="Text_ShowHasNotFile">No Files</sys:String>
     <sys:String x:Key="Text_ShowHasLink">Include Link</sys:String>
@@ -46,10 +49,13 @@
     <sys:String x:Key="Text_SavePathTag">e.g. E:\Setu</sys:String>
     <sys:String x:Key="Text_Proxy">Proxy</sys:String>
     <sys:String x:Key="Text_ProxyTag">e.g. 127.0.0.1:1080</sys:String>
-    <sys:String x:Key="Text_Date">Until</sys:String>
+    <sys:String x:Key="Text_RunMode">Run Mode</sys:String>
+    <sys:String x:Key="Text_RunModeTime">Time Range</sys:String>
+    <sys:String x:Key="Text_RunModePolling">Polling Subscription</sys:String>
+    <sys:String x:Key="Text_Date">Time Range</sys:String>
     <sys:String x:Key="Text_DateTag">e.g. 1919/07/21 11:45:14</sys:String>
-    <sys:String x:Key="Text_PollMode">Polling Mode (90s, end time follows now)</sys:String>
-    <sys:String x:Key="Text_PollHint">When enabled, the app runs one scan immediately and checks Fantia for new posts every 90 seconds.</sys:String>
+    <sys:String x:Key="Text_PollMode">Polling Subscription (checks every 90s)</sys:String>
+    <sys:String x:Key="Text_PollHint">Checks newly published content against the latest 15 seen post IDs. This mode does not use the time range.</sys:String>
     <sys:String x:Key="Text_PollStatus">Status:</sys:String>
     <sys:String x:Key="Text_PollNextCheck">Next Check:</sys:String>
     <sys:String x:Key="Text_PollLastCheck">Last Check:</sys:String>
@@ -59,7 +65,7 @@
     <sys:String x:Key="Text_CheckFile">Check Local File</sys:String>
     <sys:String x:Key="Text_UpdateList">Update SupportList</sys:String>
     <sys:String x:Key="Text_StarButton">OK</sys:String>
-    <sys:String x:Key="Text_ExitButton">Exit</sys:String>
+    <sys:String x:Key="Text_ExitButton">Close</sys:String>
     <sys:String x:Key="Text_BackToMain">Goto PostList</sys:String>
     <sys:String x:Key="Text_ShowDownloader">View Alchemy Cauldron</sys:String>
     <sys:String x:Key="Text_CurrVer">Current Version:</sys:String>
@@ -107,6 +113,11 @@
     <sys:String x:Key="Text_SubTitle">Alchemy Cauldron</sys:String>
     <sys:String x:Key="Text_DownloadList">DownloadList</sys:String>
     <sys:String x:Key="Text_CompletedList">CompletedList</sys:String>
+    <sys:String x:Key="Text_DownloadEmpty">No download tasks yet</sys:String>
+    <sys:String x:Key="Text_CompletedEmpty">No completed items yet</sys:String>
+    <sys:String x:Key="Text_DownloadEmptyHint">New tasks will appear here after you start a scan</sys:String>
+    <sys:String x:Key="Text_CompletedEmptyHint">Finished downloads will appear here</sys:String>
+    <sys:String x:Key="Text_OpenSettings">Open Settings</sys:String>
     <sys:String x:Key="Text_ThreadCount">ThreadCount:</sys:String>
     <sys:String x:Key="Text_PlayButton">All Start</sys:String>
     <sys:String x:Key="Text_PauseButton">All Pause</sys:String>

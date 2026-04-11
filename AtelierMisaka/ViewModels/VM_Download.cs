@@ -919,6 +919,10 @@ namespace AtelierMisaka.ViewModels
                             {
                                 return;
                             }
+                            if (GlobalMethord.CommitFantiaPollingPendingCursor())
+                            {
+                                return;
+                            }
                             if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
                             {
                                 GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
