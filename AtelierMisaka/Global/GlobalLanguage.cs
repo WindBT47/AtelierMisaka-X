@@ -12,9 +12,11 @@ namespace AtelierMisaka
         public static string Text_CookiesFanbox { get; private set; }
         public static string Text_CookiesFantia { get; private set; }
         public static string Text_CookiesPatreon { get; private set; }
+        public static string Text_CookiesX { get; private set; }
         public static string Text_CreatorUrlFanbox { get; private set; }
         public static string Text_CreatorUrlFantia { get; private set; }
         public static string Text_CreatorUrlPatreon { get; private set; }
+        public static string Text_CreatorUrlX { get; private set; }
         public static string Text_DefaultAName { get; private set; }
         public static string Text_FilePref { get; private set; }
         public static string Text_ImagePref { get; private set; }
@@ -81,9 +83,11 @@ namespace AtelierMisaka
             Text_CookiesFanbox = GetResource("Text_CookiesTagFanbox");
             Text_CookiesFantia = GetResource("Text_CookiesTagFantia");
             Text_CookiesPatreon = GetResource("Text_CookiesTagPatreon");
+            Text_CookiesX = GetResource("Text_CookiesTagX");
             Text_CreatorUrlFanbox = GetResource("Text_CreatorUrlTagFanbox");
             Text_CreatorUrlFantia = GetResource("Text_CreatorUrlTagFantia");
             Text_CreatorUrlPatreon = GetResource("Text_CreatorUrlTagPatreon");
+            Text_CreatorUrlX = GetResource("Text_CreatorUrlTagX");
             Text_DefaultAName = GetResource("Text_DefaultName");
             Text_FilePref = GetResource("Text_FilePrefix");
             Text_ImagePref = GetResource("Text_ImagePrefix");

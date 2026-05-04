@@ -41,7 +41,7 @@
     <!--#region Pop_Setting -->
 
     <sys:String x:Key="Text_SettingTitle">Recipe Setup</sys:String>
-    <sys:String x:Key="Text_SettingDesc">Configure creator source, download range, and Fantia polling behavior.</sys:String>
+    <sys:String x:Key="Text_SettingDesc">Configure creator source, download range, Fantia polling, and X notification watching.</sys:String>
     <sys:String x:Key="Text_CreatorUrl">Url</sys:String>
     <sys:String x:Key="Text_Cost">Cost</sys:String>
     <sys:String x:Key="Text_OpBrowser">Open Browser</sys:String>
@@ -52,10 +52,20 @@
     <sys:String x:Key="Text_RunMode">Run Mode</sys:String>
     <sys:String x:Key="Text_RunModeTime">Time Range</sys:String>
     <sys:String x:Key="Text_RunModePolling">Polling Subscription</sys:String>
+    <sys:String x:Key="Text_XRunModeMedia">Media Scan</sys:String>
+    <sys:String x:Key="Text_XRunModeSearch">History Backfill</sys:String>
+    <sys:String x:Key="Text_XRunModeNotifications">Notification Watch</sys:String>
+    <sys:String x:Key="Text_XMediaOptions">X Media Options</sys:String>
+    <sys:String x:Key="Text_XIncludeRetweetMedia">Download retweet media</sys:String>
+    <sys:String x:Key="Text_XIncludeQuoteMedia">Download quote media</sys:String>
+    <sys:String x:Key="Text_XSearchMode">History Search Backfill</sys:String>
+    <sys:String x:Key="Text_XSearchHint">Uses X search syntax to backfill old media by time range. The default query uses filter:media; enabling retweet or quote media switches to a wider from/since/until search. Completeness depends on X search results.</sys:String>
+    <sys:String x:Key="Text_XNotifyMode">Notification Watch (checks every 45-75s randomly)</sys:String>
+    <sys:String x:Key="Text_XNotifyHint">The first run only records the current notification window. Later runs download images, videos, and GIF videos from new notifications.</sys:String>
     <sys:String x:Key="Text_Date">Time Range</sys:String>
     <sys:String x:Key="Text_DateTag">e.g. 1919/07/21 11:45:14</sys:String>
-    <sys:String x:Key="Text_PollMode">Polling Subscription (checks every 90s)</sys:String>
-    <sys:String x:Key="Text_PollHint">Checks newly published content against the latest 15 seen post IDs. This mode does not use the time range.</sys:String>
+    <sys:String x:Key="Text_PollMode">Polling Subscription (checks every 20-30s randomly)</sys:String>
+    <sys:String x:Key="Text_PollHint">Checks newly published content against the latest 15 seen post IDs. This mode does not use the time range, and the interval varies randomly between 20 and 30 seconds.</sys:String>
     <sys:String x:Key="Text_PollStatus">Status:</sys:String>
     <sys:String x:Key="Text_PollNextCheck">Next Check:</sys:String>
     <sys:String x:Key="Text_PollLastCheck">Last Check:</sys:String>
@@ -74,9 +84,11 @@
     <sys:String x:Key="Text_CookiesTagFanbox">Input your pixiv ID.(e.g. 1802453)</sys:String>
     <sys:String x:Key="Text_CookiesTagFantia">Input your account name.(e.g. misakacpy)</sys:String>
     <sys:String x:Key="Text_CookiesTagPatreon">Input your account name.(e.g. misakacpy)</sys:String>
+    <sys:String x:Key="Text_CookiesTagX">Input your X username.</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFanbox">https://www.fanbox.cc/@a or https://a.fanbox.cc/</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFantia">https://fantia.jp/fanclubs/12345</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagPatreon">https://www.patreon.com/abcd/posts</sys:String>
+    <sys:String x:Key="Text_CreatorUrlTagX">https://x.com/name or @name</sys:String>
 
     <sys:String x:Key="Text_DefaultName">Custom</sys:String>
 

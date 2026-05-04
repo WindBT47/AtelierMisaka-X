@@ -6,7 +6,7 @@ namespace AtelierMisaka.Models
 {
     public class FantiaPollingCursorDic : Dictionary<string, FantiaPollingCursor>
     {
-        private const int WindowSize = 15;
+        public const int WindowSize = 15;
         private static readonly char[] Splitter = new char[] { '|' };
         private SQLiteFantiaPollingCursorHelper _sqlite = SQLiteFantiaPollingCursorHelper.Instance;
 
@@ -37,6 +37,17 @@ namespace AtelierMisaka.Models
                 return pids.Count > 0;
             }
             pids = new List<string>();
+            return false;
+        }
+
+        public bool TryGetUpdatedAt(string cid, out DateTime updatedAt)
+        {
+            if (base.TryGetValue(cid, out FantiaPollingCursor cursor))
+            {
+                updatedAt = cursor.UpdatedAt;
+                return true;
+            }
+            updatedAt = DateTime.MinValue;
             return false;
         }
 

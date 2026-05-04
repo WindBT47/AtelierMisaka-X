@@ -203,6 +203,7 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <RadioButton Grid.Column="0" Content="Fanbox" Style="{StaticResource PS_RB_Setting}"
                                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fanbox}}"/>
@@ -210,10 +211,12 @@
                                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Fantia}}"/>
                                 <RadioButton Grid.Column="2" Content="Patreon" Style="{StaticResource PS_RB_Setting}"
                                              IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.Patreon}}"/>
+                                <RadioButton Grid.Column="3" Content="X" Style="{StaticResource PS_RB_Setting}"
+                                             IsChecked="{Binding Site, Converter={StaticResource atbc}, ConverterParameter={x:Static basens:SiteType.X}}"/>
                             </Grid>
                         </Border>
 
-                        <Border Style="{StaticResource PS_SectionCard}">
+                        <Border Style="{StaticResource PS_SectionCard}" Visibility="{Binding ShowCreatorUrlSection, Converter={StaticResource btvc}, ConverterParameter=collapse}">
                             <StackPanel>
                                 <Grid Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
@@ -306,7 +309,7 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Style="{StaticResource PS_SectionCard}">
+                        <Border Style="{StaticResource PS_SectionCard}" Visibility="{Binding ShowPaymentSection, Converter={StaticResource btvc}, ConverterParameter=collapse}">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource Text_Cost}" Style="{StaticResource PS_FieldLabel}"/>
                                 <Grid>
@@ -341,6 +344,47 @@
                                 <Image Height="28" Width="28" HorizontalAlignment="Right" Margin="0,8,0,0"
                                        Source="/AtelierMisaka;component/Resources/Status_Cancel.png"
                                        Visibility="{Binding IsProxyError, Converter={StaticResource btvc}, ConverterParameter=collapse}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource PS_SectionCard}" Visibility="{Binding ShowXRunModeTabs, Converter={StaticResource btvc}, ConverterParameter=collapse}" Background="#262B32">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Text_RunMode}" Style="{StaticResource PS_FieldLabel}"/>
+                                <Border Background="#1D232A" BorderBrush="#39414C" BorderThickness="1" CornerRadius="14" Padding="6">
+                                    <Grid Height="44">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="12"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="12"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <RadioButton Grid.Column="0" Content="{DynamicResource Text_XRunModeMedia}" Style="{StaticResource PS_RB_RunMode}"
+                                                     GroupName="XRunMode"
+                                                     IsChecked="{Binding XMediaScanModeDraft}"/>
+                                        <RadioButton Grid.Column="2" Content="{DynamicResource Text_XRunModeSearch}" Style="{StaticResource PS_RB_RunMode}"
+                                                     GroupName="XRunMode"
+                                                     IsChecked="{Binding XHistorySearchModeDraft}"/>
+                                        <RadioButton Grid.Column="4" Content="{DynamicResource Text_XRunModeNotifications}" Style="{StaticResource PS_RB_RunMode}"
+                                                     GroupName="XRunMode"
+                                                     IsChecked="{Binding XNotificationListenModeDraft}"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource PS_SectionCard}" Visibility="{Binding ShowXOptionSection, Converter={StaticResource btvc}, ConverterParameter=collapse}">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Text_XMediaOptions}" Style="{StaticResource PS_FieldLabel}"/>
+                                <CheckBox Style="{StaticResource PS_CB_Setting}" Content="{DynamicResource Text_XIncludeRetweetMedia}" IsChecked="{Binding XIncludeRetweetMedia}"/>
+                                <CheckBox Style="{StaticResource PS_CB_Setting}" Content="{DynamicResource Text_XIncludeQuoteMedia}" IsChecked="{Binding XIncludeQuoteMedia}" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource PS_SectionCard}" Visibility="{Binding ShowXHistorySearchSection, Converter={StaticResource btvc}, ConverterParameter=collapse}">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Text_XSearchMode}" Style="{StaticResource PS_FieldLabel}"/>
+                                <TextBlock Text="{DynamicResource Text_XSearchHint}" Foreground="#8F98A6" FontSize="14" TextWrapping="Wrap" Width="620"/>
                             </StackPanel>
                         </Border>
 
@@ -420,6 +464,32 @@
                                         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding FantiaPollingNextCheckText}" Foreground="White" FontSize="14" HorizontalAlignment="Right" Margin="0,8,0,0"/>
                                         <TextBlock Grid.Row="2" Text="{DynamicResource Text_PollLastCheck}" Foreground="#AEB7C4" FontSize="14" Margin="0,8,0,0"/>
                                         <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FantiaPollingLastCheckText}" Foreground="White" FontSize="14" HorizontalAlignment="Right" Margin="0,8,0,0"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource PS_SectionCard}" Visibility="{Binding ShowXNotificationSection, Converter={StaticResource btvc}, ConverterParameter=collapse}">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Text_XNotifyMode}" Style="{StaticResource PS_FieldLabel}"/>
+                                <TextBlock Text="{DynamicResource Text_XNotifyHint}" Foreground="#8F98A6" FontSize="14" Margin="0,10,0,0" TextWrapping="Wrap" Width="620"/>
+                                <Border Background="#202730" BorderBrush="#344253" BorderThickness="1" CornerRadius="12" Padding="12,10" Margin="0,14,0,0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{DynamicResource Text_PollStatus}" Foreground="#AEB7C4" FontSize="14"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding XPollingStatusText}" Foreground="White" FontSize="14" HorizontalAlignment="Right"/>
+                                        <TextBlock Grid.Row="1" Text="{DynamicResource Text_PollNextCheck}" Foreground="#AEB7C4" FontSize="14" Margin="0,8,0,0"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding XPollingNextCheckText}" Foreground="White" FontSize="14" HorizontalAlignment="Right" Margin="0,8,0,0"/>
+                                        <TextBlock Grid.Row="2" Text="{DynamicResource Text_PollLastCheck}" Foreground="#AEB7C4" FontSize="14" Margin="0,8,0,0"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding XPollingLastCheckText}" Foreground="White" FontSize="14" HorizontalAlignment="Right" Margin="0,8,0,0"/>
                                     </Grid>
                                 </Border>
                             </StackPanel>

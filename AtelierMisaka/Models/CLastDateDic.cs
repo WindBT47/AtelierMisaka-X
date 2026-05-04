@@ -13,6 +13,7 @@ namespace AtelierMisaka.Models
             Add(SiteType.Fanbox, new List<CLastDate>());
             Add(SiteType.Fantia, new List<CLastDate>());
             Add(SiteType.Patreon, new List<CLastDate>());
+            Add(SiteType.X, new List<CLastDate>());
             LoadData();
         }
 
@@ -23,6 +24,10 @@ namespace AtelierMisaka.Models
             {
                 foreach (var item in _sqlite.GetAll())
                 {
+                    if (!ContainsKey(item.Key))
+                    {
+                        base.Add(item.Key, new List<CLastDate>());
+                    }
                     base[item.Key] = item.Value;
                 }
             }
@@ -30,6 +35,10 @@ namespace AtelierMisaka.Models
 
         public bool TryGetValue(SiteType st, string cid, out DateTime dt)
         {
+            if (!ContainsKey(st))
+            {
+                base.Add(st, new List<CLastDate>());
+            }
             var cd = base[st].Find(x => x.CId == cid);
             bool flag = null != cd;
             dt = flag ? cd.LastDate : DateTime.Now;
@@ -38,6 +47,10 @@ namespace AtelierMisaka.Models
 
         public bool Add(CLastDate cld)
         {
+            if (!ContainsKey(cld.Site))
+            {
+                base.Add(cld.Site, new List<CLastDate>());
+            }
             int index = -1;
             if ((index = base[cld.Site].IndexOf(cld)) != -1)
             {

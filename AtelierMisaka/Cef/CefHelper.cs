@@ -1,4 +1,6 @@
 ﻿using CefSharp;
+using CefSharp.Enums;
+using CefSharp.Handler;
 using CefSharp.Wpf;
 using System;
 using System.Collections.Generic;
@@ -20,26 +22,42 @@ namespace AtelierMisaka
 
         public static string CachePath => Path.Combine(asesmblyDirectory, "ChromiumCache");
 
-        public static void Initialize()
+        public static bool Initialize()
         {
-            if (initialized) return;
+            if (initialized) return true;
+
+            EnsureCefSharpCoreRuntimeLoaded();
 
             var cefSettings = new CefSettings()
             {
+                RootCachePath = CachePath,
                 LocalesDirPath = Path.Combine(cefDirectory, "locales"),
                 ResourcesDirPath = cefDirectory,
                 BrowserSubprocessPath = Path.Combine(cefDirectory, "CefSharp.BrowserSubprocess.exe"),
                 CachePath = CachePath,
+                LogFile = CefDiagnostics.CefLogFile,
             };
-            cefSettings.CefCommandLineArgs.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
-            cefSettings.LogSeverity = LogSeverity.Disable;
+            cefSettings.CefCommandLineArgs.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36");
+            cefSettings.CefCommandLineArgs.Add("disable-gpu", "1");
+            cefSettings.CefCommandLineArgs.Add("do-not-de-elevate", "1");
+            cefSettings.LogSeverity = LogSeverity.Warning;
 
             CefSharpSettings.WcfEnabled = true;
             CefSharpSettings.ShutdownOnExit = true;
             CefSharpSettings.SubprocessExitIfParentProcessClosed = true;
-            Cef.Initialize(cefSettings);
+            if (!Cef.Initialize(cefSettings, performDependencyCheck: true, browserProcessHandler: new AtelierBrowserProcessHandler()))
+            {
+                if (IsExpectedEarlyExit(Cef.GetExitCode()))
+                {
+                    GlobalMethord.ErrorLog(BuildInitializationFailureMessage());
+                    return false;
+                }
+
+                throw new InvalidOperationException(BuildInitializationFailureMessage());
+            }
 
             initialized = true;
+            return true;
         }
 
         public static Assembly ResolveCefSharpAssembly(object sender, ResolveEventArgs args)
@@ -88,6 +106,50 @@ namespace AtelierMisaka
                 v["server"] = Address;
                 return rc.SetPreference("proxy", v, out string error);
             });
+        }
+
+        private static void EnsureCefSharpCoreRuntimeLoaded()
+        {
+            if (Directory.Exists(Path.Combine(asesmblyDirectory, cefArch)))
+            {
+                CefRuntime.LoadCefSharpCoreRuntimeAnyCpu(asesmblyDirectory);
+            }
+        }
+
+        private static bool IsExpectedEarlyExit(ResultCode exitCode)
+        {
+            return exitCode == ResultCode.NormalExitProcessNotified
+                || exitCode == ResultCode.NormalExitAutoDeElevated;
+        }
+
+        private static string BuildInitializationFailureMessage()
+        {
+            var subprocessPath = Path.Combine(cefDirectory, "CefSharp.BrowserSubprocess.exe");
+            var runtimePath = Path.Combine(cefDirectory, "CefSharp.Core.Runtime.dll");
+            var libcefPath = Path.Combine(cefDirectory, "libcef.dll");
+            var localesPath = Path.Combine(cefDirectory, "locales");
+            var exitCode = Cef.GetExitCode();
+
+            return "CefSharp initialization failed."
+                + Environment.NewLine + "ProcessArchitecture: " + (Environment.Is64BitProcess ? "x64" : "x86")
+                + Environment.NewLine + "CefExitCode: " + (int)exitCode + " (" + exitCode + ")"
+                + Environment.NewLine + "CefDirectory: " + cefDirectory
+                + Environment.NewLine + "RootCachePath: " + CachePath
+                + Environment.NewLine + "CachePath: " + CachePath
+                + Environment.NewLine + "BrowserSubprocessPath: " + subprocessPath + " Exists=" + File.Exists(subprocessPath)
+                + Environment.NewLine + "CefSharp.Core.Runtime.dll Exists=" + File.Exists(runtimePath)
+                + Environment.NewLine + "libcef.dll Exists=" + File.Exists(libcefPath)
+                + Environment.NewLine + "locales Exists=" + Directory.Exists(localesPath)
+                + Environment.NewLine + "CefLogFile: " + CefDiagnostics.CefLogFile;
+        }
+
+        private sealed class AtelierBrowserProcessHandler : BrowserProcessHandler
+        {
+            protected override bool OnAlreadyRunningAppRelaunch(IReadOnlyDictionary<string, string> commandLine, string currentDirectory)
+            {
+                CefDiagnostics.Write("Cef", "already-running-app-relaunch currentDirectory=" + currentDirectory);
+                return true;
+            }
         }
 
         private static string GetCefDirectory()

@@ -10,7 +10,8 @@
     {
         Fanbox,
         Fantia,
-        Patreon
+        Patreon,
+        X
     }
 
     public enum FantiaPollingState

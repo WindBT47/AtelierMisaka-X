@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtelierMisaka", "AtelierMis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtelierMisaka_FileManager", "AtelierMisaka_FileManager\AtelierMisaka_FileManager.csproj", "{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtelierMisaka_Smoke", "AtelierMisaka_Smoke\AtelierMisaka_Smoke.csproj", "{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Release|x64.Build.0 = Release|x64
 		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Release|x86.ActiveCfg = Release|Any CPU
 		{008D60F1-BBA2-4F94-A03A-59CB8B93BFD3}.Release|x86.Build.0 = Release|Any CPU
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Debug|x64.ActiveCfg = Debug|x64
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Debug|x64.Build.0 = Debug|x64
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Debug|x86.Build.0 = Debug|Any CPU
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Release|x64.ActiveCfg = Release|x64
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Release|x64.Build.0 = Release|x64
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Release|x86.ActiveCfg = Release|Any CPU
+		{6E04A120-9E63-4F2C-BE1A-2DF87F5D7B0B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

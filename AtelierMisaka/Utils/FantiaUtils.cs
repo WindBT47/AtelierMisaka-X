@@ -26,12 +26,14 @@ namespace AtelierMisaka
         readonly Regex _artDataImage = GlobalRegex.GetRegex(RegexType.FantiaDataImage);
         readonly string _nextP = "fa fa-angle-right";
         readonly string _meUrl = "https://fantia.jp/api/v1/me";
-        private const int _pollingWindowSize = 15;
+        private const int _pollingWindowSize = FantiaPollingCursorDic.WindowSize;
         private HashSet<string> _pidList = null;
         private readonly SemaphoreSlim _cefGate = new SemaphoreSlim(1, 1);
         private bool _usePollingCursor = false;
         private bool _seedPollingCursor = false;
+        private bool _isPollingScan = false;
         private HashSet<string> _pollingCursorPids = new HashSet<string>();
+        private DateTime _pollingCursorUpdatedAt = DateTime.MinValue;
         private int _consecutiveSeenCount = 0;
         public Queue<string> _apiData = new Queue<string>();
         public IList<string> LastScanHeadPids { get; private set; } = new List<string>();
@@ -251,7 +253,7 @@ namespace AtelierMisaka
                         if (_usePollingCursor && _pollingCursorPids.Contains(pid))
                         {
                             _consecutiveSeenCount++;
-                            if (_consecutiveSeenCount >= _pollingWindowSize)
+                            if (FantiaPollingPolicy.ShouldStopAfterSeenWindow(_consecutiveSeenCount))
                             {
                                 flag = false;
                                 break;
@@ -275,7 +277,7 @@ namespace AtelierMisaka
                     }
                     ma = ma.NextMatch();
                 }
-                if (flag && sphtml.IndexOf(_nextP) != -1)
+                if (flag && FantiaPollingPolicy.ShouldScanNextPage(_isPollingScan, sphtml.IndexOf(_nextP) != -1))
                 {
                     index++;
                     bis.AddRange(await GetPostIDsFromWebCode(uid, index));
@@ -293,7 +295,9 @@ namespace AtelierMisaka
             LastScanHeadPids = new List<string>();
             _usePollingCursor = false;
             _seedPollingCursor = false;
+            _isPollingScan = false;
             _pollingCursorPids = new HashSet<string>();
+            _pollingCursorUpdatedAt = DateTime.MinValue;
             _consecutiveSeenCount = 0;
 
             if (GlobalData.VM_MA.Site != SiteType.Fantia || !GlobalData.VM_MA.FantiaPollingMode)
@@ -301,6 +305,7 @@ namespace AtelierMisaka
                 return;
             }
 
+            _isPollingScan = true;
             if (GlobalData.ForceFantiaPollingSeed)
             {
                 GlobalData.ForceFantiaPollingSeed = false;
@@ -312,6 +317,7 @@ namespace AtelierMisaka
             {
                 _pollingCursorPids = new HashSet<string>(lastPids);
                 _usePollingCursor = _pollingCursorPids.Count > 0;
+                GlobalData.FantiaPollingCursorDic.TryGetUpdatedAt(uid, out _pollingCursorUpdatedAt);
             }
             else
             {
@@ -344,6 +350,10 @@ namespace AtelierMisaka
                         {
                             return fi.UpdateDate > GlobalData.VM_MA.LastDate;
                         }
+                    }
+                    if (IsOldPostReorderedInPolling(fi))
+                    {
+                        return true;
                     }
                     fi.FID = jfp.post.id.ToString();
                     fi.Title = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(jfp.post.title));
@@ -692,6 +702,16 @@ namespace AtelierMisaka
             {
                 _cefGate.Release();
             }
+        }
+
+        private bool IsOldPostReorderedInPolling(FantiaItem fi)
+        {
+            if (!_usePollingCursor || _pollingCursorUpdatedAt == DateTime.MinValue)
+            {
+                return false;
+            }
+
+            return FantiaPollingPolicy.IsOldPostReordered(fi.CreateDate, fi.UpdateDate, _pollingCursorUpdatedAt);
         }
 
         private async Task<string> GetWebCodeAsync(string url)

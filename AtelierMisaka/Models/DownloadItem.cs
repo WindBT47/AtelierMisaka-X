@@ -33,6 +33,11 @@ namespace AtelierMisaka.Models
         public BaseItem SourceDocu = null;
         public string AId = string.Empty;
         public bool IsDataImage = false;
+        public SiteType Site = SiteType.Fanbox;
+        public string BaseSavePath = string.Empty;
+        public string Cookies = string.Empty;
+        public bool UseProxy = false;
+        public WebProxy Proxy = null;
 
         private void ShowSpeed(object state)
         {
@@ -42,6 +47,14 @@ namespace AtelierMisaka.Models
         public DownloadItem()
         {
             _showSpeed = new Timer(ShowSpeed);
+            if (GlobalData.VM_MA != null)
+            {
+                Site = GlobalData.VM_MA.Site;
+                Cookies = GlobalData.VM_MA.Cookies;
+                UseProxy = GlobalData.VM_MA.UseProxy;
+                Proxy = GlobalData.VM_MA.MyProxy;
+                BaseSavePath = GlobalData.VM_MA.SavePath;
+            }
         }
 
         public DownloadStatus DLStatus
@@ -93,7 +106,11 @@ namespace AtelierMisaka.Models
 
         public string SavePathStr
         {
-            get => _savePath.Replace(GlobalData.VM_DL.SavePath, "{Base Path}");
+            get
+            {
+                var basePath = string.IsNullOrEmpty(BaseSavePath) ? GlobalData.VM_DL.SavePath : BaseSavePath;
+                return string.IsNullOrEmpty(basePath) ? _savePath : _savePath.Replace(basePath, "{Base Path}");
+            }
         }
 
         public string Link
@@ -291,13 +308,13 @@ namespace AtelierMisaka.Models
                     {
                         ErrorMsg = string.Empty;
                         _request = WebRequest.CreateHttp(_link);
-                        if (GlobalData.VM_MA.UseProxy)
+                        if (UseProxy)
                         {
-                            _request.Proxy = GlobalData.VM_MA.MyProxy;
+                            _request.Proxy = Proxy;
                         }
-                        if (GlobalData.VM_DL.TempSite != SiteType.Patreon)
+                        if (Site != SiteType.Patreon && !string.IsNullOrEmpty(Cookies))
                         {
-                            _request.Headers.Add(HttpRequestHeader.Cookie, GlobalData.VM_MA.Cookies);
+                            _request.Headers.Add(HttpRequestHeader.Cookie, Cookies);
                         }
                         if (_totalRC != 0)
                         {
@@ -359,7 +376,7 @@ namespace AtelierMisaka.Models
                                 Url = _link.Split('?').FirstOrDefault(),
                                 SavePath = _savePath,
                                 FileName = _fileName,
-                                Site = GlobalData.VM_DL.TempSite
+                                Site = Site
                             });
                             Array.Clear(_dlData, 0, _dlData.Length);
                             _dlData = null;
@@ -447,7 +464,7 @@ namespace AtelierMisaka.Models
                                 Url = _link.Split('?').FirstOrDefault(),
                                 SavePath = _savePath,
                                 FileName = _fileName,
-                                Site = GlobalData.VM_DL.TempSite
+                                Site = Site
                             });
                             GC.Collect(9);
                         }

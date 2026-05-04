@@ -27,6 +27,7 @@ namespace AtelierMisaka
             GlobalData.DLLogs = new DownloadLogList();
             GlobalData.LastDateDic = new CLastDateDic();
             GlobalData.FantiaPollingCursorDic = new FantiaPollingCursorDic();
+            GlobalData.XSeenCursorDic = new XSeenCursorDic();
         }
 
         public static void UpdateCulture()
@@ -97,7 +98,7 @@ namespace AtelierMisaka
         public static void SetFantiaPollingPendingCursor(string cid, IEnumerable<string> pids)
         {
             GlobalData.FantiaPollingPendingCId = cid ?? string.Empty;
-            GlobalData.FantiaPollingPendingPids = pids == null ? new List<string>() : pids.Where(x => !string.IsNullOrEmpty(x)).Distinct().Take(15).ToList();
+            GlobalData.FantiaPollingPendingPids = pids == null ? new List<string>() : pids.Where(x => !string.IsNullOrEmpty(x)).Distinct().Take(FantiaPollingCursorDic.WindowSize).ToList();
         }
 
         public static void ClearFantiaPollingPendingCursor()
@@ -122,6 +123,54 @@ namespace AtelierMisaka
                 ClearFantiaPollingPendingCursor();
             }
             return flag;
+        }
+
+        public static void SetXSeenPendingCursor(string cursorKey, IEnumerable<string> seenIds, int windowSize)
+        {
+            var key = cursorKey ?? string.Empty;
+            var ids = seenIds == null ? new List<string>() : seenIds.Where(x => !string.IsNullOrEmpty(x)).Distinct().Take(windowSize).ToList();
+            GlobalData.XSeenPendingKey = key;
+            GlobalData.XSeenPendingIds = ids;
+            GlobalData.XSeenPendingWindowSize = windowSize;
+            if (!string.IsNullOrEmpty(key) && ids.Count > 0 && windowSize > 0)
+            {
+                GlobalData.XSeenPendingCursors[key] = Tuple.Create(ids, windowSize);
+            }
+        }
+
+        public static void ClearXSeenPendingCursor()
+        {
+            GlobalData.XSeenPendingKey = string.Empty;
+            GlobalData.XSeenPendingIds.Clear();
+            GlobalData.XSeenPendingWindowSize = 0;
+            GlobalData.XSeenPendingCursors.Clear();
+        }
+
+        public static bool CommitXSeenPendingCursor()
+        {
+            if (GlobalData.XSeenCursorDic == null)
+            {
+                return false;
+            }
+
+            var committed = false;
+            foreach (var item in GlobalData.XSeenPendingCursors.ToList())
+            {
+                var ids = item.Value.Item1;
+                var windowSize = item.Value.Item2;
+                if (ids != null && ids.Count > 0 && windowSize > 0)
+                {
+                    committed |= GlobalData.XSeenCursorDic.AddOrUpdate(item.Key, ids, windowSize);
+                }
+            }
+            if (committed)
+            {
+                GlobalData.XSeenPendingKey = string.Empty;
+                GlobalData.XSeenPendingIds.Clear();
+                GlobalData.XSeenPendingWindowSize = 0;
+                GlobalData.XSeenPendingCursors.Clear();
+            }
+            return committed;
         }
 
         public static bool IsFileExist(string folder, string name)

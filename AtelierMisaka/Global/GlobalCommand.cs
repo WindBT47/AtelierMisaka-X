@@ -13,6 +13,7 @@ namespace AtelierMisaka
         {
             GlobalData.VM_MA.IsShowDocument = false;
             GlobalData.VM_MA.SyncFantiaRunModeDraft();
+            GlobalData.VM_MA.SyncXRunModeDraft();
             GlobalData.VM_MA.PopPage = GlobalData.Pop_Setting;
             GlobalData.VM_MA.LZindex = 3;
         }

@@ -34,6 +34,9 @@ namespace AtelierMisaka
             GlobalData.VM_MA.MTop = (ActualHeight - 300) / 2;
 
             GlobalData.VM_MA.PatreonCefBrowser = new ChromiumWebBrowser("about:blank");
+            GlobalData.VM_MA.XCefBrowser = new ChromiumWebBrowser("about:blank");
+            CefDiagnostics.Attach((ChromiumWebBrowser)GlobalData.VM_MA.PatreonCefBrowser, "VisibleBrowser");
+            CefDiagnostics.Attach((ChromiumWebBrowser)GlobalData.VM_MA.XCefBrowser, "XBackgroundBrowser");
             //for fantia test
             //FantiaUtils fu = new FantiaUtils();
             //GlobalData.DownLP = new Views.Downloader(new System.Collections.Generic.List<Models.BaseItem>());
@@ -56,7 +59,8 @@ namespace AtelierMisaka
         {
             return !HasSavedSetting("Settings\\Setting_Fanbox.ini")
                 && !HasSavedSetting("Settings\\Setting_Fantia.ini")
-                && !HasSavedSetting("Settings\\Setting_Patreon.ini");
+                && !HasSavedSetting("Settings\\Setting_Patreon.ini")
+                && !HasSavedSetting("Settings\\Setting_X.ini");
         }
 
         private static bool HasSavedSetting(string path)
