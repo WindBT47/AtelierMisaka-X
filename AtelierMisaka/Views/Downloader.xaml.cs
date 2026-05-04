@@ -55,7 +55,7 @@ namespace AtelierMisaka.Views
             GlobalData.LastDateDic.Add(new CLastDate(VM_DD.TempAI, VM_DD.TempSite, GlobalData.VM_MA.LastDate));
         }
 
-        public async void LoadData(IList<BaseItem> bis = null, bool flag = false)
+        public async Task LoadData(IList<BaseItem> bis = null, bool flag = false)
         {
             PrepareSession(bis, flag);
             var downLoadItemList = new ObservableCollection<DownloadItem>();
@@ -259,6 +259,10 @@ namespace AtelierMisaka.Views
                 }
             });
             VM_DD.DownLoadItemList = downLoadItemList;
+            if (GlobalData.VM_MA.Site == SiteType.X && downLoadItemList.Count > 0 && !VM_DD.IsDownloading && VM_DD.QuestCommand.CanExecute(null))
+            {
+                VM_DD.QuestCommand.Execute(null);
+            }
         }
 
         private void Btn_Close_Click(object sender, RoutedEventArgs e)

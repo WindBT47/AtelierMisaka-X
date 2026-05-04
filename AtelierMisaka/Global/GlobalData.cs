@@ -22,10 +22,16 @@ namespace AtelierMisaka
 
         public static CLastDateDic LastDateDic = null;
         public static FantiaPollingCursorDic FantiaPollingCursorDic = null;
+        public static XSeenCursorDic XSeenCursorDic = null;
         public static DownloadLogList DLLogs = null;
         public static string FantiaPollingPendingCId = string.Empty;
         public static List<string> FantiaPollingPendingPids = new List<string>();
         public static bool ForceFantiaPollingSeed = false;
+        public static string XSeenPendingKey = string.Empty;
+        public static List<string> XSeenPendingIds = new List<string>();
+        public static int XSeenPendingWindowSize = 0;
+        public static Dictionary<string, Tuple<List<string>, int>> XSeenPendingCursors = new Dictionary<string, Tuple<List<string>, int>>();
+        public static bool ForceXNotificationSeed = false;
 
         public static Pop_Setting Pop_Setting = null;
         public static Pop_Document Pop_Document = null;
@@ -46,6 +52,7 @@ namespace AtelierMisaka
         private static Lazy<FanboxUtils> _utilFanbox = new Lazy<FanboxUtils>();
         private static Lazy<FantiaUtils> _utilFantia = new Lazy<FantiaUtils>();
         private static Lazy<PatreonUtils> _utilPatreon = new Lazy<PatreonUtils>();
+        private static Lazy<XUtils> _utilX = new Lazy<XUtils>();
 
         public static BaseUtils CaptureUtil
         {
@@ -57,8 +64,10 @@ namespace AtelierMisaka
                         return _utilFanbox.Value;
                     case SiteType.Fantia:
                         return _utilFantia.Value;
-                    default:
+                    case SiteType.Patreon:
                         return _utilPatreon.Value;
+                    default:
+                        return _utilX.Value;
                 }
             }
         }

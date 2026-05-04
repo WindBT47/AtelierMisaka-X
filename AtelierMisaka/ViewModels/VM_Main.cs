@@ -181,6 +181,23 @@ namespace AtelierMisaka.ViewModels
         private DateTime? _fantiaPollingNextCheck = null;
         private DateTime? _fantiaPollingLastCheck = null;
 
+        private ArtistInfo _artistX = new ArtistInfo();
+        private string _cookiesX = string.Empty;
+        private string _idX = string.Empty;
+        private string _proxyX = string.Empty;
+        private string _savePathX = string.Empty;
+        private bool _useProxyX = false;
+        private bool _needCookieX = true;
+        private bool _xNotificationMode = false;
+        private bool _xNotificationModeDraft = false;
+        private bool _xHistorySearchMode = false;
+        private bool _xHistorySearchModeDraft = false;
+        private bool _xIncludeRetweetMedia = false;
+        private bool _xIncludeQuoteMedia = false;
+        private FantiaPollingState _xPollingStatus = FantiaPollingState.Stopped;
+        private DateTime? _xPollingNextCheck = null;
+        private DateTime? _xPollingLastCheck = null;
+
         private string _dateS = string.Empty;
         private string _dateE = string.Empty;
         private string _messages = string.Empty;
@@ -195,14 +212,17 @@ namespace AtelierMisaka.ViewModels
         private IList<ArtistInfo> _artistListFanbox = new ObservableCollection<ArtistInfo>();
         private IList<ArtistInfo> _artistListPatreon = new ObservableCollection<ArtistInfo>();
         private IList<ArtistInfo> _artistListFantia = new ObservableCollection<ArtistInfo>();
+        private IList<ArtistInfo> _artistListX = new ObservableCollection<ArtistInfo>();
 
         private WebProxy _myProxyFanbox = null;
         private WebProxy _myProxyPatreon = null;
         private WebProxy _myProxyFantia = null;
+        private WebProxy _myProxyX = null;
         private WebProxy _myProxySystem = null;
         private string _proxySystem = string.Empty;
 
         private object _patreonBrowser = null;
+        private object _xBrowser = null;
         private bool _isInitialized = false;
         private bool _isOpen = false;
         private bool _isProxyError = false;
@@ -230,8 +250,10 @@ namespace AtelierMisaka.ViewModels
                         return "https://www.fanbox.cc";
                     case SiteType.Fantia:
                         return "https://fantia.jp";
-                    default:
+                    case SiteType.Patreon:
                         return "https://www.patreon.com";
+                    default:
+                        return "https://x.com";
                 }
             }
         }
@@ -378,7 +400,31 @@ namespace AtelierMisaka.ViewModels
                     RaisePropertyChanged("ShowStandardDateSection");
                     RaisePropertyChanged("ShowFantiaTimeRangeSection");
                     RaisePropertyChanged("ShowFantiaPollingSection");
+                    RaisePropertyChanged("XNotificationMode");
+                    RaisePropertyChanged("XHistorySearchMode");
+                    RaisePropertyChanged("XMediaScanModeDraft");
+                    RaisePropertyChanged("XHistorySearchModeDraft");
+                    RaisePropertyChanged("XNotificationListenModeDraft");
+                    RaisePropertyChanged("ShowXRunModeTabs");
+                    RaisePropertyChanged("ShowCreatorUrlSection");
+                    RaisePropertyChanged("ShowPaymentSection");
+                    RaisePropertyChanged("ShowXOptionSection");
+                    RaisePropertyChanged("ShowXHistorySearchSection");
+                    RaisePropertyChanged("ShowXNotificationSection");
                     RaisePropertyChanged("CanEditDateEnd");
+                }
+            }
+        }
+
+        public object XCefBrowser
+        {
+            get => _xBrowser;
+            set
+            {
+                if (_xBrowser != value)
+                {
+                    _xBrowser = value;
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -408,8 +454,10 @@ namespace AtelierMisaka.ViewModels
                         return _artistFanbox;
                     case SiteType.Fantia:
                         return _artistFantia;
-                    default:
+                    case SiteType.Patreon:
                         return _artistPatreon;
+                    default:
+                        return _artistX;
                 }
             }
             set
@@ -430,10 +478,16 @@ namespace AtelierMisaka.ViewModels
                                 _artistFantia = value;
                             }
                             break;
-                        default:
+                        case SiteType.Patreon:
                             if (_artistPatreon != value)
                             {
                                 _artistPatreon = value;
+                            }
+                            break;
+                        default:
+                            if (_artistX != value)
+                            {
+                                _artistX = value;
                             }
                             break;
                     }
@@ -466,8 +520,10 @@ namespace AtelierMisaka.ViewModels
                         return _artistListFanbox;
                     case SiteType.Fantia:
                         return _artistListFantia;
-                    default:
+                    case SiteType.Patreon:
                         return _artistListPatreon;
+                    default:
+                        return _artistListX;
                 }
             }
             set
@@ -486,10 +542,16 @@ namespace AtelierMisaka.ViewModels
                             _artistListFantia = value;
                         }
                         break;
-                    default:
+                    case SiteType.Patreon:
                         if (_artistListPatreon != value)
                         {
                             _artistListPatreon = value;
+                        }
+                        break;
+                    default:
+                        if (_artistListX != value)
+                        {
+                            _artistListX = value;
                         }
                         break;
                 }
@@ -534,6 +596,7 @@ namespace AtelierMisaka.ViewModels
                 RaisePropertyChanged("CookieTag");
                 RaisePropertyChanged("PostUrlTag");
                 RaisePropertyChanged("FantiaPollingStatusText");
+                RaisePropertyChanged("XPollingStatusText");
             }
         }
 
@@ -547,8 +610,10 @@ namespace AtelierMisaka.ViewModels
                         return GlobalLanguage.Text_CookiesFanbox;
                     case SiteType.Fantia:
                         return GlobalLanguage.Text_CookiesFantia;
-                    default:
+                    case SiteType.Patreon:
                         return GlobalLanguage.Text_CookiesPatreon;
+                    default:
+                        return GlobalLanguage.Text_CookiesX;
                 }
             }
         }
@@ -563,8 +628,10 @@ namespace AtelierMisaka.ViewModels
                         return GlobalLanguage.Text_CreatorUrlFanbox;
                     case SiteType.Fantia:
                         return GlobalLanguage.Text_CreatorUrlFantia;
-                    default:
+                    case SiteType.Patreon:
                         return GlobalLanguage.Text_CreatorUrlPatreon;
+                    default:
+                        return GlobalLanguage.Text_CreatorUrlX;
                 }
             }
         }
@@ -615,8 +682,10 @@ namespace AtelierMisaka.ViewModels
                         return _savePathFanbox;
                     case SiteType.Fantia:
                         return _savePathFantia;
-                    default:
+                    case SiteType.Patreon:
                         return _savePathPatreon;
+                    default:
+                        return _savePathX;
                 }
             }
             set
@@ -635,10 +704,16 @@ namespace AtelierMisaka.ViewModels
                             _savePathFantia = value;
                         }
                         break;
-                    default:
+                    case SiteType.Patreon:
                         if (_savePathPatreon != value)
                         {
                             _savePathPatreon = value;
+                        }
+                        break;
+                    default:
+                        if (_savePathX != value)
+                        {
+                            _savePathX = value;
                         }
                         break;
                 }
@@ -656,8 +731,10 @@ namespace AtelierMisaka.ViewModels
                         return _needCookieFanbox;
                     case SiteType.Fantia:
                         return _needCookieFantia;
-                    default:
+                    case SiteType.Patreon:
                         return _needCookiePatreon;
+                    default:
+                        return _needCookieX;
                 }
             }
             set
@@ -670,8 +747,11 @@ namespace AtelierMisaka.ViewModels
                     case SiteType.Fantia:
                         _needCookieFantia = value;
                         break;
-                    default:
+                    case SiteType.Patreon:
                         _needCookiePatreon = value;
+                        break;
+                    default:
+                        _needCookieX = value;
                         break;
                 }
             }
@@ -687,8 +767,10 @@ namespace AtelierMisaka.ViewModels
                         return _idFanbox;
                     case SiteType.Fantia:
                         return _idFantia;
-                    default:
+                    case SiteType.Patreon:
                         return _idPatreon;
+                    default:
+                        return _idX;
                 }
             }
             set
@@ -707,10 +789,16 @@ namespace AtelierMisaka.ViewModels
                             _idFantia = value;
                         }
                         break;
-                    default:
+                    case SiteType.Patreon:
                         if (_idPatreon != value)
                         {
                             _idPatreon = value;
+                        }
+                        break;
+                    default:
+                        if (_idX != value)
+                        {
+                            _idX = value;
                         }
                         break;
                 }
@@ -727,8 +815,10 @@ namespace AtelierMisaka.ViewModels
                         return _cookiesFanbox;
                     case SiteType.Fantia:
                         return _cookiesFantia;
-                    default:
+                    case SiteType.Patreon:
                         return _cookiesPatreon;
+                    default:
+                        return _cookiesX;
                 }
             }
             set
@@ -761,10 +851,16 @@ namespace AtelierMisaka.ViewModels
                             }
                         }
                         break;
-                    default:
+                    case SiteType.Patreon:
                         if (_cookiesPatreon != value)
                         {
                             _cookiesPatreon = value;
+                        }
+                        break;
+                    default:
+                        if (_cookiesX != value)
+                        {
+                            _cookiesX = value;
                         }
                         break;
                 }
@@ -833,8 +929,11 @@ namespace AtelierMisaka.ViewModels
                     case SiteType.Fantia:
                         res = _proxyFantia;
                         break;
-                    default:
+                    case SiteType.Patreon:
                         res = _proxyPatreon;
+                        break;
+                    default:
+                        res = _proxyX;
                         break;
                 }
                 if (string.IsNullOrEmpty(res))
@@ -888,7 +987,7 @@ namespace AtelierMisaka.ViewModels
                             IsProxyError = _myProxyFantia == null;
                         }
                         break;
-                    default:
+                    case SiteType.Patreon:
                         if (_proxyPatreon != value)
                         {
                             _proxyPatreon = value;
@@ -905,6 +1004,25 @@ namespace AtelierMisaka.ViewModels
                                 _myProxyPatreon = null;
                             }
                             IsProxyError = _myProxyPatreon == null;
+                        }
+                        break;
+                    default:
+                        if (_proxyX != value)
+                        {
+                            _proxyX = value;
+                            if (_regex.IsMatch(_proxyX))
+                            {
+                                try
+                                {
+                                    _myProxyX = new WebProxy(_proxyX);
+                                }
+                                catch { _myProxyX = null; }
+                            }
+                            else
+                            {
+                                _myProxyX = null;
+                            }
+                            IsProxyError = _myProxyX == null;
                         }
                         break;
                 }
@@ -950,8 +1068,10 @@ namespace AtelierMisaka.ViewModels
                         return _myProxyFanbox;
                     case SiteType.Fantia:
                         return _myProxyFantia;
-                    default:
+                    case SiteType.Patreon:
                         return _myProxyPatreon;
+                    default:
+                        return _myProxyX;
                 }
             }
         }
@@ -966,8 +1086,10 @@ namespace AtelierMisaka.ViewModels
                         return _useProxyFanbox;
                     case SiteType.Fantia:
                         return _useProxyFantia;
-                    default:
+                    case SiteType.Patreon:
                         return _useProxyPatreon;
+                    default:
+                        return _useProxyX;
                 }
             }
             set
@@ -986,10 +1108,16 @@ namespace AtelierMisaka.ViewModels
                             _useProxyFantia = value;
                         }
                         break;
-                    default:
+                    case SiteType.Patreon:
                         if (_useProxyPatreon != value)
                         {
                             _useProxyPatreon = value;
+                        }
+                        break;
+                    default:
+                        if (_useProxyX != value)
+                        {
+                            _useProxyX = value;
                         }
                         break;
                 }
@@ -1166,13 +1294,243 @@ namespace AtelierMisaka.ViewModels
 
         public bool ShowFantiaRunModeTabs => _site == SiteType.Fantia;
 
-        public bool ShowStandardDateSection => _site != SiteType.Fantia;
+        public bool ShowStandardDateSection => _site != SiteType.Fantia && !(_site == SiteType.X && _xNotificationModeDraft);
 
         public bool ShowFantiaTimeRangeSection => _site == SiteType.Fantia && !_fantiaPollingModeDraft;
 
         public bool ShowFantiaPollingSection => _site == SiteType.Fantia && _fantiaPollingModeDraft;
 
         public bool CanEditDateEnd => _useDate && !(_site == SiteType.Fantia && _fantiaPollingMode);
+
+        public bool XNotificationMode
+        {
+            get => _xNotificationMode;
+            set
+            {
+                if (_xNotificationMode != value)
+                {
+                    _xNotificationMode = value;
+                    if (value)
+                    {
+                        _xHistorySearchMode = false;
+                        _xHistorySearchModeDraft = false;
+                    }
+                    if (!value)
+                    {
+                        XPollingStatus = FantiaPollingState.Stopped;
+                        XPollingNextCheck = null;
+                    }
+                    _xNotificationModeDraft = value;
+                    RaiseXRunModeProperties();
+                }
+            }
+        }
+
+        public bool XNotificationModeDraft
+        {
+            get => _xNotificationModeDraft;
+            set
+            {
+                if (_xNotificationModeDraft != value)
+                {
+                    _xNotificationModeDraft = value;
+                    if (value)
+                    {
+                        _xHistorySearchModeDraft = false;
+                    }
+                    RaiseXRunModeProperties();
+                }
+            }
+        }
+
+        public bool XMediaScanModeDraft
+        {
+            get => !_xHistorySearchModeDraft && !_xNotificationModeDraft;
+            set
+            {
+                if (value)
+                {
+                    XNotificationModeDraft = false;
+                    XHistorySearchModeDraft = false;
+                }
+            }
+        }
+
+        public bool XHistorySearchMode
+        {
+            get => _xHistorySearchMode;
+            set
+            {
+                if (_xHistorySearchMode != value)
+                {
+                    _xHistorySearchMode = value;
+                    if (value)
+                    {
+                        _xNotificationMode = false;
+                        _xNotificationModeDraft = false;
+                        XPollingStatus = FantiaPollingState.Stopped;
+                        XPollingNextCheck = null;
+                        UseDate = true;
+                    }
+                    _xHistorySearchModeDraft = value;
+                    RaiseXRunModeProperties();
+                }
+            }
+        }
+
+        public bool XHistorySearchModeDraft
+        {
+            get => _xHistorySearchModeDraft;
+            set
+            {
+                if (_xHistorySearchModeDraft != value)
+                {
+                    _xHistorySearchModeDraft = value;
+                    if (value)
+                    {
+                        _xNotificationModeDraft = false;
+                        UseDate = true;
+                    }
+                    RaiseXRunModeProperties();
+                }
+            }
+        }
+
+        public bool XNotificationListenModeDraft
+        {
+            get => _xNotificationModeDraft;
+            set
+            {
+                XNotificationModeDraft = value;
+            }
+        }
+
+        public void SyncXRunModeDraft()
+        {
+            XNotificationModeDraft = XNotificationMode;
+            XHistorySearchModeDraft = XHistorySearchMode;
+        }
+
+        public void ApplyXRunModeDraft()
+        {
+            XHistorySearchMode = XHistorySearchModeDraft;
+            XNotificationMode = XNotificationModeDraft;
+            if (!XHistorySearchModeDraft && !XNotificationModeDraft)
+            {
+                XHistorySearchMode = false;
+                XNotificationMode = false;
+            }
+        }
+
+        private void RaiseXRunModeProperties()
+        {
+            RaisePropertyChanged("XNotificationMode");
+            RaisePropertyChanged("XHistorySearchMode");
+            RaisePropertyChanged("XMediaScanModeDraft");
+            RaisePropertyChanged("XHistorySearchModeDraft");
+            RaisePropertyChanged("XNotificationListenModeDraft");
+            RaisePropertyChanged("ShowCreatorUrlSection");
+            RaisePropertyChanged("ShowStandardDateSection");
+            RaisePropertyChanged("ShowXHistorySearchSection");
+            RaisePropertyChanged("ShowXNotificationSection");
+        }
+
+        public bool XIncludeRetweetMedia
+        {
+            get => _xIncludeRetweetMedia;
+            set
+            {
+                if (_xIncludeRetweetMedia != value)
+                {
+                    _xIncludeRetweetMedia = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public bool XIncludeQuoteMedia
+        {
+            get => _xIncludeQuoteMedia;
+            set
+            {
+                if (_xIncludeQuoteMedia != value)
+                {
+                    _xIncludeQuoteMedia = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public FantiaPollingState XPollingStatus
+        {
+            get => _xPollingStatus;
+            set
+            {
+                if (_xPollingStatus != value)
+                {
+                    _xPollingStatus = value;
+                    RaisePropertyChanged("XPollingStatusText");
+                }
+            }
+        }
+
+        public DateTime? XPollingNextCheck
+        {
+            get => _xPollingNextCheck;
+            set
+            {
+                if (_xPollingNextCheck != value)
+                {
+                    _xPollingNextCheck = value;
+                    RaisePropertyChanged("XPollingNextCheckText");
+                }
+            }
+        }
+
+        public DateTime? XPollingLastCheck
+        {
+            get => _xPollingLastCheck;
+            set
+            {
+                if (_xPollingLastCheck != value)
+                {
+                    _xPollingLastCheck = value;
+                    RaisePropertyChanged("XPollingLastCheckText");
+                }
+            }
+        }
+
+        public string XPollingStatusText
+        {
+            get
+            {
+                switch (_xPollingStatus)
+                {
+                    case FantiaPollingState.Running:
+                        return GlobalLanguage.Text_PollStateRunning;
+                    case FantiaPollingState.WaitingDownloads:
+                        return GlobalLanguage.Text_PollStateWaiting;
+                    default:
+                        return GlobalLanguage.Text_PollStateStopped;
+                }
+            }
+        }
+
+        public string XPollingNextCheckText => _xPollingNextCheck.HasValue ? _xPollingNextCheck.Value.ToString("HH:mm:ss") : "--:--:--";
+
+        public string XPollingLastCheckText => _xPollingLastCheck.HasValue ? _xPollingLastCheck.Value.ToString("HH:mm:ss") : "--:--:--";
+
+        public bool ShowXRunModeTabs => _site == SiteType.X;
+
+        public bool ShowCreatorUrlSection => !(_site == SiteType.X && _xNotificationModeDraft);
+
+        public bool ShowPaymentSection => _site != SiteType.X;
+
+        public bool ShowXOptionSection => _site == SiteType.X;
+
+        public bool ShowXHistorySearchSection => _site == SiteType.X && _xHistorySearchModeDraft;
+
+        public bool ShowXNotificationSection => _site == SiteType.X && _xNotificationModeDraft;
 
         public bool ShowLoad
         {

@@ -25,7 +25,11 @@ namespace AtelierMisaka
         {
             SetDllDirectory(CefHelper.cefDirectory);
 
-            CefHelper.Initialize();
+            if (!CefHelper.Initialize())
+            {
+                Shutdown();
+                return;
+            }
 
             Control.IsTabStopProperty.OverrideMetadata(typeof(Control), new FrameworkPropertyMetadata(false));
 

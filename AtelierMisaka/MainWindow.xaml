@@ -234,5 +234,8 @@
                 </Grid>
             </Canvas>
         </Grid>
+        <ContentControl Content="{Binding XCefBrowser}" Width="1" Height="1" Opacity="0"
+                        IsHitTestVisible="False" Focusable="False"
+                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
     </Grid>
 </Window>

@@ -41,7 +41,7 @@
     <!--#region Pop_Setting -->
 
     <sys:String x:Key="Text_SettingTitle">レシピ設定</sys:String>
-    <sys:String x:Key="Text_SettingDesc">クリエイター、保存範囲、Fantia の巡回動作をここで設定します。</sys:String>
+    <sys:String x:Key="Text_SettingDesc">クリエイター、保存範囲、Fantia 巡回、X 通知監視をここで設定します。</sys:String>
     <sys:String x:Key="Text_CreatorUrl">リンク</sys:String>
     <sys:String x:Key="Text_Cost">コスト</sys:String>
     <sys:String x:Key="Text_OpBrowser">ブラウザを開く</sys:String>
@@ -52,10 +52,20 @@
     <sys:String x:Key="Text_RunMode">動作モード</sys:String>
     <sys:String x:Key="Text_RunModeTime">時間範囲</sys:String>
     <sys:String x:Key="Text_RunModePolling">巡回購読</sys:String>
+    <sys:String x:Key="Text_XRunModeMedia">メディア取得</sys:String>
+    <sys:String x:Key="Text_XRunModeSearch">履歴補完</sys:String>
+    <sys:String x:Key="Text_XRunModeNotifications">通知監視</sys:String>
+    <sys:String x:Key="Text_XMediaOptions">X メディア設定</sys:String>
+    <sys:String x:Key="Text_XIncludeRetweetMedia">リポストのメディアをダウンロード</sys:String>
+    <sys:String x:Key="Text_XIncludeQuoteMedia">引用のメディアをダウンロード</sys:String>
+    <sys:String x:Key="Text_XSearchMode">履歴検索補完</sys:String>
+    <sys:String x:Key="Text_XSearchHint">X の検索構文で時間範囲ごとに古いメディアを補完します。通常は filter:media を使い、リポストまたは引用メディアを有効にした場合は from/since/until の広い検索を使います。完全性は X の検索結果に依存します。</sys:String>
+    <sys:String x:Key="Text_XNotifyMode">通知監視（45-75秒ごとにランダム確認）</sys:String>
+    <sys:String x:Key="Text_XNotifyHint">初回は現在の通知だけを記録します。以後は新しい通知に含まれる画像、動画、GIF 動画だけをダウンロードします。</sys:String>
     <sys:String x:Key="Text_Date">時間範囲</sys:String>
     <sys:String x:Key="Text_DateTag">例: 1919/07/21 11:45:14(半角注意)</sys:String>
-    <sys:String x:Key="Text_PollMode">巡回購読（90秒ごとに確認）</sys:String>
-    <sys:String x:Key="Text_PollHint">直近 15 件の既知 post ID を基準に、新しく公開された内容を確認します。このモードでは時間範囲を使いません。</sys:String>
+    <sys:String x:Key="Text_PollMode">巡回購読（20-30秒ごとにランダム確認）</sys:String>
+    <sys:String x:Key="Text_PollHint">直近 15 件の既知 post ID を基準に、新しく公開された内容を確認します。このモードでは時間範囲を使わず、確認間隔は 20 秒から 30 秒の間でランダムに変化します。</sys:String>
     <sys:String x:Key="Text_PollStatus">状態:</sys:String>
     <sys:String x:Key="Text_PollNextCheck">次回チェック:</sys:String>
     <sys:String x:Key="Text_PollLastCheck">前回チェック:</sys:String>
@@ -74,9 +84,11 @@
     <sys:String x:Key="Text_CookiesTagFanbox">PixivのIDを入力してね</sys:String>
     <sys:String x:Key="Text_CookiesTagFantia">アカウントネームを入力してね</sys:String>
     <sys:String x:Key="Text_CookiesTagPatreon">アカウントネームを入力してね</sys:String>
+    <sys:String x:Key="Text_CookiesTagX">X のユーザー名を入力してね</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFanbox">https://www.fanbox.cc/@a or https://a.fanbox.cc/</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFantia">https://fantia.jp/fanclubs/12345</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagPatreon">https://www.patreon.com/abcd/posts</sys:String>
+    <sys:String x:Key="Text_CreatorUrlTagX">https://x.com/name または @name</sys:String>
 
     <sys:String x:Key="Text_DefaultName">名無し</sys:String>
 

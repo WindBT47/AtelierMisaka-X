@@ -32,7 +32,7 @@ namespace AtelierMisaka.ViewModels
         private IList<DownloadItem> _downLoadList = null;
         private IList<DownloadItem> _completedList = null;
 
-        private HashSet<string> _retryList = null;
+        private HashSet<string> _retryList = new HashSet<string>();
 
         private static readonly object lock_Dl = new object();
         private static readonly object lock_DList = new object();
@@ -206,7 +206,7 @@ namespace AtelierMisaka.ViewModels
                         return true;
                     }
                 }
-                if (_isFantia)
+                if (_retryList != null)
                 {
                     lock (lock_Fantia)
                     {
@@ -251,7 +251,7 @@ namespace AtelierMisaka.ViewModels
                 if (_isFantia != value)
                 {
                     _isFantia = value;
-                    if (_isFantia)
+                    if (_isFantia && _retryList == null)
                     {
                         _retryList = new HashSet<string>();
                     }
@@ -745,11 +745,83 @@ namespace AtelierMisaka.ViewModels
             });
         }
 
+        public ParamCommand<XItem> AddXCommand
+        {
+            get => new ParamCommand<XItem>((xi) =>
+            {
+                DownloadItem di = null;
+                var artistId = string.IsNullOrWhiteSpace(xi.AuthorScreenName) ? _tempAI : xi.AuthorScreenName;
+                var artistName = string.IsNullOrWhiteSpace(xi.AuthorScreenName) ? GlobalData.VM_MA.Artist.AName : xi.AuthorScreenName;
+                artistId = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(artistId));
+                artistName = GlobalMethord.RemoveAllDot(GlobalMethord.ReplacePath(artistName));
+                string sp = Path.Combine(_savePath, artistName, $"{xi.CreateDate:yyyyMM\\\\dd_HHmm}_{xi.Title}");
+                try
+                {
+                    Directory.CreateDirectory(sp);
+                }
+                catch
+                {
+                    if (!Directory.Exists(sp))
+                    {
+                        sp = GlobalMethord.RemoveLastDot(GlobalMethord.ReplacePath(sp));
+                        Directory.CreateDirectory(sp);
+                    }
+                }
+
+                GlobalData.DLLogs.LoadData(artistId, SiteType.X);
+                GlobalData.DLLogs.SetPId(xi.ID);
+                for (int i = 0; i < xi.ContentUrls.Count; i++)
+                {
+                    if (!GlobalData.DLLogs.HasLog(xi.ContentUrls[i], sp, xi.FileNames[i]))
+                    {
+                        di = new DownloadItem
+                        {
+                            FileName = xi.FileNames[i],
+                            Link = xi.ContentUrls[i],
+                            SavePath = sp,
+                            CTime = xi.CreateDate,
+                            SourceDocu = xi,
+                            AId = artistId,
+                            Site = SiteType.X
+                        };
+                        di.CheckTempFile();
+                        GlobalData.SyContext.Send((dd) =>
+                        {
+                            GlobalData.VM_DL.DownLoadItemList.Add((DownloadItem)dd);
+                        }, di);
+                    }
+                }
+
+                if (!_isDownloading && QuestCommand.CanExecute(null))
+                {
+                    QuestCommand.Execute(null);
+                }
+                else
+                {
+                    BeginNextCommand.Execute(null);
+                }
+
+                if (xi.Comments.Count > 0)
+                {
+                    var fp = Path.Combine(sp, "Comment.html");
+                    if (File.Exists(fp))
+                    {
+                        var cms = File.ReadAllLines(fp);
+                        if (cms.Except(xi.Comments).Count() == 0)
+                        {
+                            return;
+                        }
+                    }
+                    File.WriteAllLines(fp, xi.Comments);
+                }
+            });
+        }
+
         public ParamCommand<DownloadItem> AddRetryCommand
         {
             get => new ParamCommand<DownloadItem>((di) =>
             {
-                if (_isFantia)
+                if (di != null && di.Site == SiteType.Fantia)
                 {
                     lock (lock_Fantia)
                     {
@@ -894,46 +966,30 @@ namespace AtelierMisaka.ViewModels
                             return;
                         }
                     }
-                    if (!_isFantia)
+                    if (_retryList.Count != 0)
                     {
-                        if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
-                        {
-                            GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
-                            GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
-                        }
-                        else
-                        {
-                            GlobalData.VM_MA.LastDate = GlobalData.VM_MA.LastDate_End;
-                            GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate_End);
-                        }
+                        FantiaRetryCommand.Execute(null);
+                        return;
+                    }
+                    if (GlobalData.VM_MA.ShowLoad)
+                    {
+                        return;
+                    }
+                    var committedXCursor = GlobalMethord.CommitXSeenPendingCursor();
+                    var committedFantiaCursor = GlobalMethord.CommitFantiaPollingPendingCursor();
+                    if (committedXCursor || committedFantiaCursor)
+                    {
+                        return;
+                    }
+                    if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
+                    {
+                        GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
+                        GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
                     }
                     else
                     {
-                        if (_retryList.Count != 0)
-                        {
-                            FantiaRetryCommand.Execute(null);
-                        }
-                        else
-                        {
-                            if (GlobalData.VM_MA.ShowLoad)
-                            {
-                                return;
-                            }
-                            if (GlobalMethord.CommitFantiaPollingPendingCursor())
-                            {
-                                return;
-                            }
-                            if (string.IsNullOrEmpty(GlobalData.VM_MA.Date_End))
-                            {
-                                GlobalData.VM_MA.Date_Start = GlobalData.StartTime.ToString("yyyy/MM/dd HH:mm:ss");
-                                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate);
-                            }
-                            else
-                            {
-                                GlobalData.VM_MA.LastDate = GlobalData.VM_MA.LastDate_End;
-                                GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate_End);
-                            }
-                        }
+                        GlobalData.VM_MA.LastDate = GlobalData.VM_MA.LastDate_End;
+                        GlobalData.LastDateDic.Update(GlobalData.VM_MA.LastDate_End);
                     }
                 }
             });

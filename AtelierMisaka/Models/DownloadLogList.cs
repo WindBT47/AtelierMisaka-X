@@ -8,6 +8,8 @@ namespace AtelierMisaka.Models
         SQLiteDownloadLogHelper _sqlite = SQLiteDownloadLogHelper.Instance;
 
         private string _pid = string.Empty;
+        private string _cid = string.Empty;
+        private SiteType _site = SiteType.Fanbox;
         private List<DownloadLog> _selectedLogs = new List<DownloadLog>();
 
         public bool IsExist { get; private set; } = false;
@@ -16,6 +18,8 @@ namespace AtelierMisaka.Models
 
         public void LoadData(string cid, SiteType st)
         {
+            _cid = cid ?? string.Empty;
+            _site = st;
             if (Count > 0)
             {
                 Clear();
@@ -62,7 +66,10 @@ namespace AtelierMisaka.Models
         {
             if (_sqlite.InsertLog(dl) != 0)
             {
-                base.Add(dl);
+                if (dl.CId == _cid && dl.Site == _site)
+                {
+                    base.Add(dl);
+                }
                 return true;
             }
             return false;

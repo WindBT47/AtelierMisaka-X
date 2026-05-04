@@ -41,7 +41,7 @@
     <!--#region Pop_Setting -->
 
     <sys:String x:Key="Text_SettingTitle">配方设置</sys:String>
-    <sys:String x:Key="Text_SettingDesc">配置作者来源、下载范围和 Fantia 轮询行为。</sys:String>
+    <sys:String x:Key="Text_SettingDesc">配置作者来源、下载范围、Fantia 轮询和 X 通知监听行为。</sys:String>
     <sys:String x:Key="Text_CreatorUrl">作者链接</sys:String>
     <sys:String x:Key="Text_Cost">付费区间</sys:String>
     <sys:String x:Key="Text_OpBrowser">打开浏览器</sys:String>
@@ -52,10 +52,20 @@
     <sys:String x:Key="Text_RunMode">运行方式</sys:String>
     <sys:String x:Key="Text_RunModeTime">时间范围</sys:String>
     <sys:String x:Key="Text_RunModePolling">轮询订阅</sys:String>
+    <sys:String x:Key="Text_XRunModeMedia">媒体扫描</sys:String>
+    <sys:String x:Key="Text_XRunModeSearch">历史回填</sys:String>
+    <sys:String x:Key="Text_XRunModeNotifications">通知监听</sys:String>
+    <sys:String x:Key="Text_XMediaOptions">X 媒体选项</sys:String>
+    <sys:String x:Key="Text_XIncludeRetweetMedia">下载转发媒体</sys:String>
+    <sys:String x:Key="Text_XIncludeQuoteMedia">下载引用媒体</sys:String>
+    <sys:String x:Key="Text_XSearchMode">历史搜索回填</sys:String>
+    <sys:String x:Key="Text_XSearchHint">使用 X 搜索语法按时间范围补抓旧媒体。默认使用 filter:media；开启转发或引用媒体时使用更宽的 from/since/until 搜索。搜索完整性取决于 X 返回结果。</sys:String>
+    <sys:String x:Key="Text_XNotifyMode">通知监听（每 45-75 秒随机检查一次）</sys:String>
+    <sys:String x:Key="Text_XNotifyHint">首次启动只记录当前通知窗口，之后只下载监听期间新出现通知中的图片、视频和 GIF 视频。</sys:String>
     <sys:String x:Key="Text_Date">时间范围</sys:String>
     <sys:String x:Key="Text_DateTag">例: 1919/07/21 11:45:14</sys:String>
-    <sys:String x:Key="Text_PollMode">轮询订阅（每 90 秒检查一次）</sys:String>
-    <sys:String x:Key="Text_PollHint">根据最近 15 个已见 post ID 检查新公开内容。此模式不使用时间范围。</sys:String>
+    <sys:String x:Key="Text_PollMode">轮询订阅（每 20-30 秒随机检查一次）</sys:String>
+    <sys:String x:Key="Text_PollHint">根据最近 15 个已见 post ID 检查新公开内容。此模式不使用时间范围，检查间隔会在 20 到 30 秒之间随机变化。</sys:String>
     <sys:String x:Key="Text_PollStatus">状态:</sys:String>
     <sys:String x:Key="Text_PollNextCheck">下次检查:</sys:String>
     <sys:String x:Key="Text_PollLastCheck">上次检查:</sys:String>
@@ -74,9 +84,11 @@
     <sys:String x:Key="Text_CookiesTagFanbox">请输入你的Pixiv的ID号</sys:String>
     <sys:String x:Key="Text_CookiesTagFantia">请输入你的帐号名</sys:String>
     <sys:String x:Key="Text_CookiesTagPatreon">请输入你的帐号名</sys:String>
+    <sys:String x:Key="Text_CookiesTagX">请输入你的 X 用户名</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFanbox">https://www.fanbox.cc/@a or https://a.fanbox.cc/</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagFantia">https://fantia.jp/fanclubs/12345</sys:String>
     <sys:String x:Key="Text_CreatorUrlTagPatreon">https://www.patreon.com/abcd/posts</sys:String>
+    <sys:String x:Key="Text_CreatorUrlTagX">https://x.com/name 或 @name</sys:String>
 
     <sys:String x:Key="Text_DefaultName">自定义</sys:String>
 
