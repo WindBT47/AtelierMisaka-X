@@ -17,9 +17,9 @@ AtelierMisaka Reforge focuses on three workflows:
 
 The current UI uses three main sections:
 
-* `下载`
-* `文章`
-* `设置`
+* `Downloads`
+* `Posts`
+* `Settings`
 
 Fantia also supports a built-in polling mode that checks for new posts every 20-30 seconds randomly.
 
@@ -70,14 +70,14 @@ This does not mean every old post is guaranteed to appear, because X search and 
 
 ## Quick Start
 
-1. Open `设置`.
+1. Open `Settings`.
 2. Choose `Fanbox`, `Fantia`, `Patreon`, or `X`.
 3. Set the creator URL, save path, and account or proxy options if needed.
-4. Click `确定`.
-5. Use `文章` to browse posts.
-6. Use `下载` to watch active and completed tasks.
-7. On Fantia, enable `轮询模式` if you want automatic checks every 20-30 seconds.
-8. On X, log in with `打开浏览器`, then choose `媒体扫描`, `历史回填`, or `通知监听`.
+4. Click `OK`.
+5. Use `Posts` to browse posts.
+6. Use `Downloads` to watch active and completed tasks.
+7. On Fantia, enable `Polling Subscription` if you want automatic checks every 20-30 seconds.
+8. On X, log in with `Open Browser`, then choose `Media Scan`, `History Backfill`, or `Notification Watch`.
 
 ## Runtime Requirements
 
@@ -199,9 +199,9 @@ Reforge は、元のブランチの更新が止まったあとに続けて保守
 
 メイン画面は次の 3 つのセクションで構成されています。
 
-* `下载`
-* `文章`
-* `设置`
+* `ダウンロード`
+* `投稿`
+* `設定`
 
 Fantia では `20-30 秒ごとのランダムポーリングモード` に対応しています。
 
@@ -252,14 +252,14 @@ X の検索結果やタイムラインインデックスは完全とは限らな
 
 ## クイックスタート
 
-1. `设置` を開きます。
+1. `設定` を開きます。
 2. `Fanbox`、`Fantia`、`Patreon`、`X` のいずれかを選びます。
 3. クリエイター URL、保存先、必要なアカウント情報や Proxy を設定します。
-4. `确定` を押します。
-5. `文章` で投稿を確認します。
-6. `下载` で進行中と完了済みのタスクを確認します。
-7. Fantia では `轮询模式` を有効にすると、20-30 秒ごとにランダムで新しい post を確認します。
-8. X では、まず `打开浏览器` でログインし、`媒体扫描`、`历史回填`、`通知监听` のいずれかを選びます。
+4. `調合開始` を押します。
+5. `投稿` で投稿を確認します。
+6. `ダウンロード` で進行中と完了済みのタスクを確認します。
+7. Fantia では `巡回購読` を有効にすると、20-30 秒ごとにランダムで新しい post を確認します。
+8. X では、まず `ブラウザを開く` でログインし、`メディア取得`、`履歴補完`、`通知監視` のいずれかを選びます。
 
 ## 動作環境
 
