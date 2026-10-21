@@ -136,7 +136,7 @@ namespace AtelierMisaka
                         CollectTweetIds(property.Value, headIds);
                         if (includeRetweets)
                         {
-                            ParseToken(property.Value, includeRetweets, includeQuotes, XTweetType.Retweet, BuildContext(currentTweet), tweets, headIds);
+                            ParseToken(property.Value, includeRetweets, includeQuotes, XTweetType.Retweet, BuildContext(currentTweet) ?? context, tweets, headIds);
                         }
                         continue;
                     }
@@ -146,12 +146,12 @@ namespace AtelierMisaka
                         CollectTweetIds(property.Value, headIds);
                         if (includeQuotes)
                         {
-                            ParseToken(property.Value, includeRetweets, includeQuotes, XTweetType.Quote, BuildContext(currentTweet), tweets, headIds);
+                            ParseToken(property.Value, includeRetweets, includeQuotes, XTweetType.Quote, BuildContext(currentTweet) ?? context, tweets, headIds);
                         }
                         continue;
                     }
 
-                    ParseToken(property.Value, includeRetweets, includeQuotes, tweetType, context, tweets, headIds);
+                    ParseToken(property.Value, includeRetweets, includeQuotes, tweetType, BuildContext(currentTweet) ?? context, tweets, headIds);
                 }
             }
             else if (token is JArray array)

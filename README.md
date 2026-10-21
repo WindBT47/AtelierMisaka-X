@@ -1,6 +1,6 @@
 # AtelierMisaka Reforge
 
-Current version: `v1.6.10`
+Current version: `v1.6.11`
 
 AtelierMisaka Reforge is a Windows desktop tool for browsing and downloading creator content from Fanbox, Fantia, Patreon, and X.
 
@@ -40,6 +40,7 @@ AtelierMisaka Reforge uses a browser-session based capture pipeline instead:
 * It adds history search backfill for older media ranges that timeline-only tools often miss.
 * It adds notification watching for new media after you start monitoring.
 * It keeps retweet media and quote media as separate switches, so you can avoid pulling unrelated reposted content by default.
+* Reposts are read from the profile's `Reposts` tab, because X's 2026-08 profile redesign moved reposts off the main timeline.
 
 This does not mean every old post is guaranteed to appear, because X search and timeline indexing are not guaranteed to be complete. The point is practical coverage: Reforge combines multiple X Web paths instead of betting everything on one timeline.
 
@@ -67,6 +68,7 @@ This does not mean every old post is guaranteed to appear, because X search and 
 * Some site flows still rely on your own session or cookie setup.
 * X history backfill improves coverage for older posts, but X search and timeline results are not guaranteed to be complete.
 * X Web structures can change, so X parsing may require future maintenance.
+* X moved reposts to a dedicated `Reposts` tab in 2026-08. Media Scan and History Backfill read that tab when the retweet media switch is on; with the switch off, reposted media is skipped by design.
 
 ## Quick Start
 
@@ -91,7 +93,7 @@ The packaged release includes the CefSharp runtime used by the application.
 
 # 欢迎来到 AtelierMisaka Reforge
 
-当前版本：`v1.6.10`
+当前版本：`v1.6.11`
 
 AtelierMisaka Reforge 是一个 Windows 桌面工具，用于查看和下载 Fanbox、Fantia、Patreon、X 上创作者已公开或已支援可访问的内容。
 
@@ -131,6 +133,7 @@ AtelierMisaka Reforge 的 X 抓取不是只赌一条路径：
 * 增加历史搜索回填，用时间范围和搜索语法补抓时间线拿不到的旧媒体。
 * 增加通知监听，用来处理启动后出现的新通知媒体。
 * 转发媒体和引用媒体是独立开关，默认可以避免把作者转发流里的大量外部内容一起拉下来。
+* 转发内容从主页的 `Reposts` 标签读取，因为 X 在 2026-08 的改版中把转发从主时间线移走了。
 
 这不等于保证所有旧帖 100% 都能出现，因为 X 搜索和时间线索引本身不保证完整。它的优势是实用覆盖率：不是只翻一条时间线，而是组合多条 X Web 路径处理不同场景。
 
@@ -182,7 +185,7 @@ AtelierMisaka Reforge 的 X 抓取不是只赌一条路径：
 
 # AtelierMisaka Reforge へようこそ
 
-現在のバージョン：`v1.6.10`
+現在のバージョン：`v1.6.11`
 
 AtelierMisaka Reforge は、Fanbox、Fantia、Patreon、X の投稿とコンテンツを閲覧し、ダウンロードするための Windows デスクトップツールです。
 
@@ -222,6 +225,7 @@ AtelierMisaka Reforge の X 取得は、1 つの経路だけに依存しませ�
 * 履歴検索補完で、時間範囲と検索構文を使ってタイムラインだけでは届かない古いメディアを補完します。
 * 通知監視で、開始後に出現した新しい通知関連メディアを処理します。
 * リポストメディアと引用メディアは個別スイッチにし、不要な外部コンテンツを既定で避けられます。
+* リポストはプロフィールの `Reposts` タブから読み取ります。X の 2026-08 の改版で、リポストはメインタイムラインから分離されました。
 
 X の検索結果やタイムラインインデックスは完全とは限らないため、古い投稿を 100% 保証するものではありません。強みは実用上のカバー率です。1 本のタイムラインだけに頼らず、複数の X Web 経路を組み合わせています。
 

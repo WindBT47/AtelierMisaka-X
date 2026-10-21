@@ -140,18 +140,40 @@ namespace AtelierMisaka
             }
 
             LastCursorKey = $"Timeline:{NormalizeScreenName(screenName)}";
+            var includeRetweets = GlobalData.VM_MA.XIncludeRetweetMedia;
+            var includeQuotes = GlobalData.VM_MA.XIncludeQuoteMedia;
+
+            // X replaced UserMedia/UserTweets with UserVideoTimeline/UserOriginalsTimeline in 2026-08.
+            // /media now only serves the video sub-tab, so the profile timeline is always captured to keep photo posts.
             var jsons = await CaptureJsonAsync($"https://x.com/{screenName}/media", 10000);
-            if (ShouldCaptureUserTimelineForRelatedMedia())
+            jsons.AddRange(await CaptureJsonAsync($"https://x.com/{screenName}", 10000, 2));
+
+            // Reposts no longer appear on the profile timeline; they live on the dedicated /reposts tab (UserRepostsTimeline).
+            var repostJsons = new List<string>();
+            var repostOps = string.Empty;
+            if (ShouldCaptureRepostTimeline())
             {
-                jsons.AddRange(await CaptureJsonAsync($"https://x.com/{screenName}", 10000, 2));
+                var repostResponses = await CaptureResponsesAsync(BuildRepostsUrl(screenName), 10000, 2);
+                repostOps = SummarizeOperationNames(repostResponses);
+                repostJsons.AddRange(repostResponses.Select(x => x.Body).Where(x => !string.IsNullOrWhiteSpace(x)));
             }
 
-            var items = XTimelineParser.ParseItems(jsons, GlobalData.VM_MA.XIncludeRetweetMedia, GlobalData.VM_MA.XIncludeQuoteMedia, true, TimelineWindowSize, out List<string> headIds);
-            items = items.Where(x =>
+            var items = XTimelineParser.ParseItems(jsons, includeRetweets, includeQuotes, true, TimelineWindowSize, out List<string> headIds);
+            var repostItems = XTimelineParser.ParseItems(repostJsons, true, includeQuotes, true, TimelineWindowSize, out List<string> repostHeadIds, XTweetType.Retweet);
+            items = items
+                .Concat(repostItems)
+                .GroupBy(x => x.ID)
+                .Select(x => x.First())
+                .Where(x =>
                     x.TweetType != XTweetType.Original ||
                     string.Equals(NormalizeScreenName(x.AuthorScreenName), NormalizeScreenName(screenName), StringComparison.OrdinalIgnoreCase))
                 .ToList();
+            headIds.AddRange(repostHeadIds);
+            headIds = headIds.Where(x => !string.IsNullOrEmpty(x)).Distinct().Take(TimelineWindowSize).ToList();
             LastScanHeadIds = headIds;
+            CefDiagnostics.Write("XTimeline",
+                $"screenName={SafeLog(screenName)} includeRT={includeRetweets} includeQuote={includeQuotes} jsons={jsons.Count} repostJsons={repostJsons.Count} repostOps=[{repostOps}] " +
+                $"headIds={headIds.Count} items={items.Count} reposts={repostItems.Count}");
             return ResultHelper.NoError(items);
         }
 
@@ -174,19 +196,17 @@ namespace AtelierMisaka
                 var query = BuildSearchQuery(screenName, slice.Item1, slice.Item2, includeRelatedMedia);
                 queries.Add(query);
                 jsons.AddRange(await CaptureJsonAsync(BuildSearchUrl(query), 12000, 4));
-
-                if (GlobalData.VM_MA.XIncludeRetweetMedia)
-                {
-                    var retweetInclusiveQuery = BuildRetweetInclusiveSearchQuery(screenName, slice.Item1, slice.Item2);
-                    queries.Add(retweetInclusiveQuery);
-                    jsons.AddRange(await CaptureJsonAsync(BuildSearchUrl(retweetInclusiveQuery), 12000, 4));
-                }
             }
 
+            // The profile timeline keeps photo posts that the video-only /media tab no longer returns.
+            queries.Add($"profile:{screenName}");
+            jsons.AddRange(await CaptureJsonAsync($"https://x.com/{screenName}", 10000, 3));
+
+            // Search no longer exposes reposts (include:nativeretweets returns empty), so reposts come from the /reposts tab.
             if (GlobalData.VM_MA.XIncludeRetweetMedia)
             {
-                queries.Add($"profile:{screenName}");
-                jsons.AddRange(await CaptureJsonAsync($"https://x.com/{screenName}", 10000, 3));
+                queries.Add($"reposts:{screenName}");
+                retweetJsons.AddRange(await CaptureJsonAsync(BuildRepostsUrl(screenName), 10000, 3));
             }
 
             var parsedItems = XTimelineParser.ParseItems(jsons, GlobalData.VM_MA.XIncludeRetweetMedia, GlobalData.VM_MA.XIncludeQuoteMedia, true, TimelineWindowSize, out List<string> headIds);
@@ -256,9 +276,10 @@ namespace AtelierMisaka
             foreach (var screenName in postNotificationUsers.Where(x => !string.Equals(x, loginName, StringComparison.OrdinalIgnoreCase)).Take(6))
             {
                 var timelineJsons = await CaptureJsonAsync($"https://x.com/{screenName}/media", 9000, 1);
-                if (ShouldCaptureUserTimelineForRelatedMedia())
+                timelineJsons.AddRange(await CaptureJsonAsync($"https://x.com/{screenName}", 9000, 2));
+                if (ShouldCaptureRepostTimeline())
                 {
-                    timelineJsons.AddRange(await CaptureJsonAsync($"https://x.com/{screenName}", 9000, 2));
+                    timelineJsons.AddRange(await CaptureJsonAsync(BuildRepostsUrl(screenName), 9000, 1));
                 }
 
                 var timelineItems = XTimelineParser.ParseItems(timelineJsons, GlobalData.VM_MA.XIncludeRetweetMedia, GlobalData.VM_MA.XIncludeQuoteMedia, false, TimelineWindowSize, out List<string> timelineHeadIds)
@@ -297,9 +318,14 @@ namespace AtelierMisaka
             return ResultHelper.NoError(fresh);
         }
 
-        private static bool ShouldCaptureUserTimelineForRelatedMedia()
+        private static bool ShouldCaptureRepostTimeline()
         {
-            return GlobalData.VM_MA.XIncludeRetweetMedia || GlobalData.VM_MA.XIncludeQuoteMedia;
+            return GlobalData.VM_MA.XIncludeRetweetMedia;
+        }
+
+        private static string BuildRepostsUrl(string screenName)
+        {
+            return $"https://x.com/{screenName}/reposts";
         }
 
         private async Task<List<string>> CaptureJsonAsync(string url, int waitMs, int scrollCount = 2, Func<XCapturedResponse, bool> includeResponse = null)
@@ -398,11 +424,6 @@ namespace AtelierMisaka
                 query += " filter:media";
             }
             return query;
-        }
-
-        private static string BuildRetweetInclusiveSearchQuery(string screenName, DateTime start, DateTime endExclusive)
-        {
-            return $"from:{screenName} since:{start:yyyy-MM-dd} until:{endExclusive:yyyy-MM-dd} include:nativeretweets";
         }
 
         private void EnsureBrowser()
@@ -784,6 +805,28 @@ namespace AtelierMisaka
             }
 
             return string.Join("; ", result);
+        }
+
+        private static string SummarizeOperationNames(IEnumerable<XCapturedResponse> responses)
+        {
+            if (responses == null)
+            {
+                return string.Empty;
+            }
+
+            var names = new List<string>();
+            foreach (var response in responses)
+            {
+                var url = response?.Url ?? string.Empty;
+                var match = Regex.Match(url, @"graphql/[^/]+/([A-Za-z0-9_]+)");
+                var name = match.Success ? match.Groups[1].Value : url;
+                if (string.IsNullOrEmpty(name) || names.Contains(name))
+                {
+                    continue;
+                }
+                names.Add(name);
+            }
+            return SafeLog(string.Join(",", names.Take(8)), 240);
         }
 
         private static string SummarizeJsonShape(IEnumerable<string> jsons)

@@ -82,6 +82,7 @@ namespace AtelierMisaka_Smoke
                 RunXRetweetQuoteParserSmoke();
                 RunXNotificationFreshSmoke();
                 RunXSearchQuerySmoke();
+                RunXRepostsTabSmoke();
                 RunXRelatedMediaEntrySmoke();
                 RunXNotificationIdExtractionSmoke();
                 await RunXOnlyDownloadSmokeAsync(server, Path.Combine(workDir, "x-only"));
@@ -295,27 +296,54 @@ namespace AtelierMisaka_Smoke
             var related = (string)build.Invoke(null, new object[] { "tester", start, end, true });
             Assert(related == "from:tester since:2026-01-01 until:2026-02-01", "X related-media search query changed");
 
-            var buildRetweetInclusive = parserType.GetMethod("BuildRetweetInclusiveSearchQuery", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-            var retweetInclusive = (string)buildRetweetInclusive.Invoke(null, new object[] { "tester", start, end });
-            Assert(retweetInclusive == "from:tester since:2026-01-01 until:2026-02-01 include:nativeretweets", "X inclusive native-retweet search query changed");
+            var buildRepostsUrl = parserType.GetMethod("BuildRepostsUrl", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            var repostsUrl = (string)buildRepostsUrl.Invoke(null, new object[] { "tester" });
+            Assert(repostsUrl == "https://x.com/tester/reposts", "X reposts tab url changed");
         }
+
+        private static void RunXRepostsTabSmoke()
+        {
+            // Shape served by the /reposts tab (UserRepostsTimeline): each entry is the repost wrapper, and the
+            // original post with its media is nested under legacy.retweeted_status_result.
+            var originalId = "2040000000000000201";
+            var wrapperId = "2040000000000000202";
+            var wrapper =
+                "{\"rest_id\":\"" + wrapperId + "\"," +
+                "\"core\":{\"user_results\":{\"result\":{\"legacy\":{\"screen_name\":\"ShitpostGate\"}}}}," +
+                "\"legacy\":{\"full_text\":\"RT @source_author: reposted media\",\"created_at\":\"Sun May 03 09:05:00 +0000 2026\"," +
+                "\"retweeted_status_result\":{\"result\":" + BuildXTweetJson(originalId, "source_author", "reposted media", "https://pbs.twimg.com/media/reposts-tab.jpg") + "}" +
+                "}}";
+            var repostTabJson = "{\"data\":{\"entries\":[{\"content\":{\"itemContent\":{\"tweet_results\":{\"result\":" + wrapper + "}}}}]}}";
+
+            var withoutRetweets = ParseXItemsForSmoke(new[] { repostTabJson }, false, false, false, 200).Item1;
+            Assert(!HasXItem(withoutRetweets, originalId), "X parser included reposts-tab media while retweet switch was off");
+
+            var withRetweets = ParseXItemsForSmoke(new[] { repostTabJson }, true, false, false, 200, XTweetType.Retweet).Item1;
+            var reposted = withRetweets.FirstOrDefault(x => x.ID == originalId);
+            Assert(reposted != null, "X parser missed media nested under the reposts tab wrapper");
+            Assert(reposted.TweetType == XTweetType.Retweet, "X parser did not classify reposts-tab media as retweet");
+            Assert(reposted.AuthorScreenName == "source_author", "X parser used the wrong author for reposts-tab media");
+            Assert(reposted.TriggerAuthorScreenName == "ShitpostGate", "X parser did not keep the reposting account for reposts-tab media");
+            Assert(reposted.TriggerDate.HasValue && reposted.TriggerDate.Value.Year == 2026 && reposted.TriggerDate.Value.Month == 5 && reposted.TriggerDate.Value.Day == 3, "X parser did not keep the repost time for reposts-tab media");
+        }
+
 
         private static void RunXRelatedMediaEntrySmoke()
         {
             var parserType = typeof(GlobalData).Assembly.GetType("AtelierMisaka.XUtils");
-            var shouldCapture = parserType.GetMethod("ShouldCaptureUserTimelineForRelatedMedia", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            var shouldCapture = parserType.GetMethod("ShouldCaptureRepostTimeline", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
             GlobalData.VM_MA.XIncludeRetweetMedia = false;
             GlobalData.VM_MA.XIncludeQuoteMedia = false;
-            Assert(!(bool)shouldCapture.Invoke(null, new object[0]), "X related timeline capture should stay off by default");
+            Assert(!(bool)shouldCapture.Invoke(null, new object[0]), "X reposts tab capture should stay off by default");
 
             GlobalData.VM_MA.XIncludeRetweetMedia = true;
             GlobalData.VM_MA.XIncludeQuoteMedia = false;
-            Assert((bool)shouldCapture.Invoke(null, new object[0]), "X retweet media should enable user timeline capture");
+            Assert((bool)shouldCapture.Invoke(null, new object[0]), "X retweet media should enable the reposts tab capture");
 
             GlobalData.VM_MA.XIncludeRetweetMedia = false;
             GlobalData.VM_MA.XIncludeQuoteMedia = true;
-            Assert((bool)shouldCapture.Invoke(null, new object[0]), "X quote media should enable user timeline capture");
+            Assert(!(bool)shouldCapture.Invoke(null, new object[0]), "X quote media alone should not enable the reposts tab capture");
         }
 
         private static void RunXNotificationIdExtractionSmoke()
